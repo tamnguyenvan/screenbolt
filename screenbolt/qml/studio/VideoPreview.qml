@@ -37,7 +37,7 @@ Item {
             cursorShape: Qt.PointingHandCursor
             hoverEnabled: true
             onPressed: {
-                fullScreenWindow.show()
+                fullScreenWindow.showFullScreen()
             }
         }
     }

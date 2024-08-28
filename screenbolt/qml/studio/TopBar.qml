@@ -16,8 +16,9 @@ RowLayout {
     Button {
         icon.source: "qrc:/resources/icons/export.svg"
         text: qsTr("Export")
-        Material.background: "#4329F4"
-        Material.foreground: "white"
+        // Material.background: "#4329F4"
+        // Material.foreground: "white"
+        Material.background: studioWindow.accentColor
 
         MouseArea {
             anchors.fill: parent

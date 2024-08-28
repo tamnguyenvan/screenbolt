@@ -200,31 +200,31 @@ Dialog {
                     color: "gray"
                 }
 
-                RowLayout {
-                    Text {
-                        text: "Quality (Compression level)"
-                        color: "white"
-                    }
-                    ComboBox {
-                        id: compressionComboBox
-                        model: ["Studio", "Social Media", "Web", "Web (Low)"]
-                        currentIndex: 0
-                        onCurrentTextChanged: {
-                            currentCompression = currentText
-                            exportCompression = currentText
-                        }
-                    }
-                }
-                Text {
-                    text: compressionInfo[currentCompression].description
-                    color: "gray"
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                }
-                Text {
-                    text: compressionInfo[currentCompression].impact
-                    color: "gray"
-                }
+                // RowLayout {
+                //     Text {
+                //         text: "Quality (Compression level)"
+                //         color: "white"
+                //     }
+                //     ComboBox {
+                //         id: compressionComboBox
+                //         model: ["Studio", "Social Media", "Web", "Web (Low)"]
+                //         currentIndex: 0
+                //         onCurrentTextChanged: {
+                //             currentCompression = currentText
+                //             exportCompression = currentText
+                //         }
+                //     }
+                // }
+                // Text {
+                //     text: compressionInfo[currentCompression].description
+                //     color: "gray"
+                //     wrapMode: Text.WordWrap
+                //     Layout.fillWidth: true
+                // }
+                // Text {
+                //     text: compressionInfo[currentCompression].impact
+                //     color: "gray"
+                // }
 
                 Item {
                     Layout.fillHeight: true

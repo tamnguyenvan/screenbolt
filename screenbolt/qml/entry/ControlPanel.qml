@@ -16,7 +16,7 @@ Item {
     readonly property int homeWidth: 326
     readonly property int homeHeight: 200
     readonly property int closeButtonSize: 38
-    property int bottomMargin: 120
+    property int bottomMargin: 80
 
     // Control panel
     Rectangle {
@@ -74,7 +74,7 @@ Item {
 
                 ModeButton {
                     id: windowButton
-                    text: "Window"
+                    text: "Safe Area"
                     iconPath: "qrc:/resources/icons/window.svg"
                     onClicked: {
                         customButton.activated = false

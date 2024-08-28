@@ -12,7 +12,7 @@ Window {
     readonly property int defaultHeight: Screen.height
     readonly property int minWidth: Screen.width / 2
     readonly property int minHeight: Screen.height / 2
-    readonly property string accentColor: "#4329F4"
+    readonly property string accentColor: "#0077b6"
     readonly property string backgroundColor: "#0B0D0F"
 
     width: defaultWidth
@@ -24,6 +24,7 @@ Window {
     visibility: Window.Maximized
 
     Material.theme: Material.Dark
+    Material.primary: accentColor
     Material.accent: accentColor
 
     property bool isPlaying: false

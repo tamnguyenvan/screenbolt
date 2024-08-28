@@ -6,7 +6,7 @@ Item {
     width: 20
     height: 220
 
-    property string color: "#4329F3"
+    property string color: "#0353a4"
 
     Rectangle {
         id: timeSliderHead
