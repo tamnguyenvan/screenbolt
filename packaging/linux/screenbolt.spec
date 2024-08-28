@@ -29,7 +29,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='screenbolt',
+    name='ScreenBolt',
     debug=False,
     bootloader_ignore_signals=False,
     strip=True,
@@ -49,5 +49,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='screenbolt',
+    name='ScreenBolt',
 )

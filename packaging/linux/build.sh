@@ -27,13 +27,13 @@ Description: Screen recording and editing application
 EOF
 
 # Copy the entire application directory
-cp -R dist/screenbolt/* ${APP_NAME}_${VERSION}_${ARCH}/opt/${APP_NAME,,}/
+cp -R dist/ScreenBolt/* ${APP_NAME}_${VERSION}_${ARCH}/opt/${APP_NAME,,}/
 
 # Create a wrapper script in /usr/bin
 mkdir -p ${APP_NAME}_${VERSION}_${ARCH}/usr/bin
 cat << EOF > ${APP_NAME}_${VERSION}_${ARCH}/usr/bin/${APP_NAME,,}
 #!/bin/bash
-/opt/${APP_NAME,,}/screenbolt "\$@"
+/opt/${APP_NAME,,}/ScreenBolt "\$@"
 EOF
 chmod +x ${APP_NAME}_${VERSION}_${ARCH}/usr/bin/${APP_NAME,,}
 
@@ -48,7 +48,7 @@ Categories=Utility;
 EOF
 
 # Copy the icon
-cp ../../screenbolt/resources/icons/screenbolt.png ${APP_NAME}_${VERSION}_${ARCH}/usr/share/icons/hicolor/256x256/apps/${APP_NAME,,}.png
+cp ../../ScreenBolt/resources/icons/screenbolt.png ${APP_NAME}_${VERSION}_${ARCH}/usr/share/icons/hicolor/256x256/apps/${APP_NAME,,}.png
 
 # Build the .deb package
 dpkg-deb --build ${APP_NAME}_${VERSION}_${ARCH}
