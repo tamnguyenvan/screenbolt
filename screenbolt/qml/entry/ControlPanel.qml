@@ -47,6 +47,7 @@ Item {
                     id: customButton
                     text: "Custom"
                     iconPath: "qrc:/resources/icons/custom.svg"
+                    toolTipText: "Area Selection"
                     onClicked: {
                         customButton.activated = true
                         screenButton.activated = false
@@ -61,6 +62,7 @@ Item {
                     id: screenButton
                     text: "Screen"
                     iconPath: "qrc:/resources/icons/screen.svg"
+                    toolTipText: "Screen Selection"
                     activated: true
                     onClicked: {
                         customButton.activated = false
@@ -76,6 +78,7 @@ Item {
                     id: windowButton
                     text: "Safe Area"
                     iconPath: "qrc:/resources/icons/window.svg"
+                    toolTipText: "Safe Area Selection"
                     onClicked: {
                         customButton.activated = false
                         screenButton.activated = false

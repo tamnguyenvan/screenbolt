@@ -45,6 +45,7 @@ Window {
     ExportDialog {
         id: exportDialog
         parent: Overlay.overlay
+        exportFps: videoController.fps
     }
 
     Rectangle {

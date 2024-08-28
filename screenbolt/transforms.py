@@ -5,14 +5,12 @@ import re
 import time
 import platform
 from pathlib import Path
-from functools import lru_cache
 
 import cv2
 import numpy as np
 import pyautogui
 from PIL import Image, ImageDraw, ImageFilter
-from PySide6.QtGui import QPixmap
-from PySide6.QtCore import QFile, QBuffer, QIODevice
+from PySide6.QtCore import QFile, QIODevice
 
 from screenbolt.utils import hex_to_rgb, create_gradient_image
 

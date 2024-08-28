@@ -48,30 +48,33 @@ Dialog {
             '3:4': [2160, 2880]
         }
     }
+    property string outputPath: ""
 
-    property string currentCompression: "Studio"
-    property var compressionInfo: {
-        "Studio": {
-            "description": "Highest quality, best for further editing. Compression is almost impossible to notice.",
-            "impact": "Quality setting does not impact export speed."
-        },
-        "Social Media": {
-            "description": "High quality, optimized for social media platforms. Slight compression, barely noticeable.",
-            "impact": "Quality setting may slightly reduce export time."
-        },
-        "Web": {
-            "description": "Good quality, balanced for web viewing. Moderate compression, some loss in detail.",
-            "impact": "Quality setting reduces export time and file size."
-        },
-        "Web (Low)": {
-            "description": "Lower quality, optimized for fast loading. Higher compression, noticeable loss in quality.",
-            "impact": "Quality setting significantly reduces export time and file size."
-        }
-    }
+    // property string currentCompression: "Studio"
+    // property var compressionInfo: {
+    //     "Studio": {
+    //         "description": "Highest quality, best for further editing. Compression is almost impossible to notice.",
+    //         "impact": "Quality setting does not impact export speed."
+    //     },
+    //     "Social Media": {
+    //         "description": "High quality, optimized for social media platforms. Slight compression, barely noticeable.",
+    //         "impact": "Quality setting may slightly reduce export time."
+    //     },
+    //     "Web": {
+    //         "description": "Good quality, balanced for web viewing. Moderate compression, some loss in detail.",
+    //         "impact": "Quality setting reduces export time and file size."
+    //     },
+    //     "Web (Low)": {
+    //         "description": "Lower quality, optimized for fast loading. Higher compression, noticeable loss in quality.",
+    //         "impact": "Quality setting significantly reduces export time and file size."
+    //     }
+    // }
 
     property string exportFormat: "MP4"
     property int exportFps: 30
     property string exportCompression: "Studio"
+
+    property int estimatedExportTime: -1
 
     signal exportProgress(real progress)
     signal exportFinished
@@ -106,6 +109,13 @@ Dialog {
         }
     }
 
+    function updateEstimatedTime(progress) {
+        if (progress > 0) {
+            var elapsedTime = (new Date().getTime() - startTime) / 1000;
+            estimatedExportTime = Math.round((elapsedTime / progress) * (100 - progress));
+        }
+    }
+
     onCurrentSizeChanged: updateOutputSize()
 
     Connections {
@@ -119,6 +129,8 @@ Dialog {
         border.color: "#3E3E3E"
         border.width: 1
     }
+
+    property bool isExporting: false
 
     ColumnLayout {
         anchors.fill: parent
@@ -226,9 +238,9 @@ Dialog {
                 //     color: "gray"
                 // }
 
-                Item {
-                    Layout.fillHeight: true
-                }
+                // Item {
+                //     Layout.fillHeight: true
+                // }
 
                 RowLayout {
                     Layout.alignment: Qt.AlignRight
@@ -236,7 +248,11 @@ Dialog {
                     Button {
                         text: "Export to file"
                         highlighted: true
+                        enabled: !isExporting
                         onClicked: {
+                            isExporting = true
+                            startTime = new Date().getTime()
+
                             function getFormattedTimestamp() {
                                 var now = new Date();
                                 var year = now.getFullYear();
@@ -248,6 +264,7 @@ Dialog {
 
                                 return year + month + day + '-' + hours + minutes + seconds;
                             }
+                            outputPath = 'ScreenBolt-' + getFormattedTimestamp()
 
                             var exportParams = {
                                 "format": exportFormat.toLowerCase(),
@@ -255,33 +272,41 @@ Dialog {
                                 "output_size": outputSize,
                                 "aspect_ratio": videoController.aspect_ratio,
                                 "compression_level": exportCompression,
-                                "output_path": 'ScreenBolt-' + getFormattedTimestamp()
+                                "output_path": outputPath
                             }
 
                             if (sizeMap[currentSize][videoController.aspect_ratio]) {
                                 exportParams['output_size'] = sizeMap[currentSize][videoController.aspect_ratio]
                             }
                             videoController.export_video(exportParams)
+                            estimatedExportTime = 0
                             exportProgressBar.visible = true
                             cancelExportButton.visible = true
+                            estimatedTimeText.visible = true
                         }
                     }
-                    Button {
-                        text: "Copy to clipboard"
-                        onClicked: {
+                    // Button {
+                    //     text: "Copy to clipboard"
+                    //     onClicked: {
 
-                            // Handle copy logic
-                        }
-                    }
+                    //         // Handle copy logic
+                    //     }
+                    // }
                     Button {
                         text: "Cancel"
-                        onClicked: exportDialog.close()
+                        onClicked: {
+                            videoController.cancel_export()
+                            exportDialog.close()
+                        }
                     }
                 }
 
                 Text {
-                    text: "Estimated export time — 6 seconds\nEstimated max output size — 20.8MB"
+                    // text: "Estimated export time — 6 seconds"
+                    id: estimatedTimeText
+                    text: "Estimated export time: " + (estimatedExportTime >= 0 ? estimatedExportTime + " seconds" : "Calculating...")
                     color: "gray"
+                    visible: isExporting
                 }
 
                 ProgressBar {
@@ -296,14 +321,19 @@ Dialog {
                 Button {
                     id: cancelExportButton
                     text: "Cancel Export"
-                    visible: false
+                    visible: isExporting
                     onClicked: {
                         videoController.cancel_export()
                         exportProgressBar.visible = false
                         cancelExportButton.visible = false
+                        exportDialog.close()
                     }
                 }
 
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                }
             }
         }
 
@@ -318,9 +348,15 @@ Dialog {
                 spacing: 20
 
                 Text {
-                    text: "Export Completed Successfully!"
+                    text: 'Export Completed Successfully!'
                     color: "white"
                     font.pixelSize: 24
+                    Layout.alignment: Qt.AlignHCenter
+                }
+                Text {
+                    text: `~/Videos/ScreenBolt/${outputPath}.${exportFormat.toLowerCase()}`
+                    color: "white"
+                    font.pixelSize: 14
                     Layout.alignment: Qt.AlignHCenter
                 }
 
@@ -336,13 +372,20 @@ Dialog {
             target: videoController
             function onExportProgress(progress) {
                 exportProgressBar.value = progress
+                updateEstimatedTime(progress)
             }
             function onExportFinished() {
+                isExporting = false
                 exportContainer.visible = false
+                exportProgressBar.visible = false
+                cancelExportButton.visible = false
+                estimatedTimeText.visible = false
                 successContainer.visible = true
             }
         }
     }
+
+    property real startTime: 0
 
     onClosed: {
         // Reset the dialog to its initial state
@@ -351,5 +394,8 @@ Dialog {
         exportProgressBar.visible = false
         cancelExportButton.visible = false
         exportProgressBar.value = 0
+
+        estimatedTimeText.visible = false
+        estimatedExportTime = 0
     }
 }

@@ -434,19 +434,22 @@ class VideoController(QObject):
     canUndoChanged = Signal(bool)
     canRedoChanged = Signal(bool)
     outputSizeChanged = Signal()
+    fpsChanged = Signal(int)
 
     def __init__(self, frame_provider):
         super().__init__()
         self.video_processor = VideoProcessor()
         self.video_thread = VideoThread(self.video_processor)
         self.frame_provider = frame_provider
+        self.export_thread = None
+        self.is_exporting = False
 
         self.video_processor.frameProcessed.connect(self.on_frame_processed)
         self.video_processor.playingChanged.connect(self.on_playing_changed)
 
         self.undo_redo_manager = UndoRedoManager()
 
-    @Property(int)
+    @Property(int, notify=fpsChanged)
     def fps(self):
         return self.video_processor.fps
 
@@ -593,6 +596,9 @@ class VideoController(QObject):
 
     @Slot(dict)
     def export_video(self, export_params):
+        if self.is_exporting:
+            return
+        self.is_exporting = True
         self.export_thread = ExportThread(self.video_processor, export_params)
         self.export_thread.progress.connect(self.update_export_progress)
         self.export_thread.finished.connect(self.on_export_finished)
@@ -601,14 +607,16 @@ class VideoController(QObject):
     @Slot()
     def cancel_export(self):
         if self.export_thread and self.export_thread.isRunning():
-            self.export_thread.terminate()
+            self.export_thread.stop()
             self.export_thread.wait()
+            self.is_exporting = False
             self.exportFinished.emit()
 
     def update_export_progress(self, progress):
         self.exportProgress.emit(progress)
 
     def on_export_finished(self):
+        self.is_exporting = False
         self.exportFinished.emit()
 
     def on_frame_processed(self, frame):
@@ -928,6 +936,10 @@ class ExportThread(QThread):
         self.output_dir = os.path.join(os.path.expanduser("~"), "Videos/ScreenBolt")
         if not os.path.isdir(self.output_dir):
             os.makedirs(self.output_dir, exist_ok=True)
+        self._stop_flag = False
+
+    def stop(self):
+        self._stop_flag = True
 
     def run(self):
         format = self.export_params.get("format", "mp4")
@@ -962,6 +974,8 @@ class ExportThread(QThread):
         total_frames = self.video_processor.end_frame - self.video_processor.start_frame
 
         for i in range(total_frames):
+            if self._stop_flag:
+                break
             ret, frame = self.video_processor.video.read()
             if ret:
                 processed_frame = self.video_processor.process_frame(frame)
@@ -976,6 +990,9 @@ class ExportThread(QThread):
                 elif format == "gif":
                     frames.append(Image.fromarray(processed_frame))
 
+                if format == "gif" and i + 1 == total_frames:
+                    break
+
                 self.progress.emit((i + 1) / total_frames * 100)
             else:
                 break
@@ -985,7 +1002,8 @@ class ExportThread(QThread):
 
         if format == "mp4":
             out.release()
-        elif format == "gif":
+        elif format == "gif" and not self._stop_flag:
             frames[0].save(output_path, save_all=True, append_images=frames[1:], duration=1000/fps, loop=0)
+            self.progress.emit(100)
 
         self.finished.emit()

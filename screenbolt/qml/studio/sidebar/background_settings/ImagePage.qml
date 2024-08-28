@@ -17,7 +17,7 @@ Item {
             Layout.preferredHeight: 150
             color: "transparent"
             border.width: 2
-            border.color: "#c2c2c2"
+            border.color: "gray"
             radius: 4
 
             DropArea {

@@ -5,6 +5,7 @@ Button {
     id: modeButton
 
     required property string iconPath
+    property string toolTipText: ""
     property bool activated: false
 
     background: Rectangle {
@@ -35,6 +36,19 @@ Button {
             height: 30
             source: iconPath
             fillMode: Image.PreserveAspectFit
+        }
+    }
+
+
+    ToolTip {
+        visible: hovered
+        delay: 800
+        timeout: 5000
+        text: qsTr(toolTipText)
+
+        background: Rectangle {
+            color: "#1d1d1d"
+            radius: 10
         }
     }
 }
