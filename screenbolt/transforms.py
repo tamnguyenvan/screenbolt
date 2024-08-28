@@ -74,14 +74,23 @@ class AspectRatio(BaseTransform):
         aspect_height = int(height / divisor)
         return f"{aspect_width}:{aspect_height}"
 
-    @lru_cache(maxsize=32)
+    # @lru_cache(maxsize=32)
     def calculate_output_resolution(self, aspect_ratio, input_width, input_height):
         if aspect_ratio.lower() == "auto":
             aspect_ratio = self._resolution_to_aspect_ration(input_width, input_height)
 
+        def fit_input(max_width, max_height, input_width, input_height):
+            if input_width > max_width or input_height > max_height:
+                scale = min(max_width / input_width, max_height / input_height)
+                input_width = int(scale * input_width)
+                input_height = int(scale * input_height)
+
+            return input_width, input_height
+
         screen_width, screen_height = self.screen_size
         if aspect_ratio not in self._resolutions:
             # Not a standard aspect ratio
+            input_width, input_height = fit_input(screen_width, screen_height, input_width, input_height)
             return screen_width, screen_height, input_width, input_height
 
         # Get the highest resolution
@@ -104,9 +113,7 @@ class AspectRatio(BaseTransform):
 
         width, height = output_width, output_height
         if input_width > width or input_height > height:
-            scale = min(width / input_width, height / input_height)
-            input_width = int(scale * input_width)
-            input_height = int(scale * input_height)
+            input_width, input_height = fit_input(width, height, input_width, input_height)
 
         return output_width, output_height, input_width, input_height
 
@@ -178,57 +185,6 @@ class Inset(BaseTransform):
 
             kwargs['input'] = self.inset_frame
         return kwargs
-
-
-# class Roundness(BaseTransform):
-#     def __init__(self, radius=10):
-#         super().__init__()
-#         self.radius = radius
-
-#     def __call__(self, **kwargs):
-#         input = kwargs['input']
-#         zoom_factor = kwargs.get('zoom_factor', 1)
-#         width = kwargs.get('frame_width', input.shape[1])
-#         height = kwargs.get('frame_height', input.shape[0])
-#         rounded_corners = {'top_left': True, 'top_right': True, 'bottom_right': True, 'bottom_left': True}
-
-#         if 'mask_rounded_corners' in kwargs:
-#             rounded_corners = kwargs['mask_rounded_corners']
-
-#         r = int(zoom_factor * self.radius) if zoom_factor > 1 else self.radius
-#         if r > 0:
-#             # Create a mask
-#             mask = np.zeros(shape=(height, width), dtype=np.uint8)
-#             rect_w, rect_h = width - 2 * r, height - 2 * r
-#             cv2.rectangle(mask, (r, 0), (r + rect_w, height), 255, -1)
-#             cv2.rectangle(mask, (0, r), (width - 1, r + rect_h), 255, -1)
-
-#             # Draw ellipses instead of circles
-#             if rounded_corners['top_left']:
-#                 cv2.ellipse(mask, (r, r), (r, r), 180, 0, 90, 255, -1)  # Top-left corner
-#             else:
-#                 cv2.rectangle(mask, (0, 0), (r, r), 255, -1)
-
-#             if rounded_corners['top_right']:
-#                 cv2.ellipse(mask, (width - r, r), (r, r), 270, 0, 90, 255, -1)  # Top-right corner
-#             else:
-#                 cv2.rectangle(mask, (width - r, 0), (width, r), 255, -1)
-
-#             if rounded_corners['bottom_right']:
-#                 cv2.ellipse(mask, (width - r, height - r), (r, r), 0, 0, 90, 255, -1)  # Bottom-right corner
-#             else:
-#                 cv2.rectangle(mask, (width - r, height - r), (width, height), 255, -1)
-
-#             if rounded_corners['bottom_left']:
-#                 cv2.ellipse(mask, (r, height - r), (r, r), 90, 0, 90, 255, -1)  # Bottom-left corner
-#             else:
-#                 cv2.rectangle(mask, (0, height - r), (r, height), 255, -1)
-#         else:
-#             mask = np.full(shape=(height, width), fill_value=255, dtype=np.uint8)
-
-#         kwargs['mask'] = mask
-#         return kwargs
-
 
 class Cursor(BaseTransform):
     def __init__(self, move_data, offsets, size=64):

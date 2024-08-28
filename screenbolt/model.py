@@ -68,6 +68,7 @@ class ClipTrackModel(QAbstractListModel):
         super().__init__(parent)
         self._clips = [ClipTrack(0, 0, 0)]
         self._clicked_events = []
+        self._video_fps = config.DEFAULT_FPS
         self.undo_redo_manager = UndoRedoManager()
 
     def rowCount(self, parent=QModelIndex()):
@@ -90,6 +91,10 @@ class ClipTrackModel(QAbstractListModel):
         if self._clips and index < len(self._clips):
             return self._clips[index].to_dict()
 
+    @Slot(float)
+    def set_fps(self, fps):
+        self._video_fps = fps
+
     @Slot()
     def cut_clip(self):
         if self._clicked_events:
@@ -99,15 +104,14 @@ class ClipTrackModel(QAbstractListModel):
                 if position < clip.width:
                     # Store the original state for undo
                     original_clip = ClipTrack(clip.x, clip.width, clip.clip_len)
-                    original_clips = self._clips.copy()
 
                     def do_cut():
                         # Create a new clip
-                        new_clip = ClipTrack(clip.x + position, clip.width - position, (clip.width - position) / config.DEFAULT_PIXELS_PER_FRAME / config.DEFAULT_FPS)
+                        new_clip = ClipTrack(clip.x + position, clip.width - position, (clip.width - position) / config.DEFAULT_PIXELS_PER_FRAME / self._video_fps)
 
                         # Update the current clip
                         clip.width = position
-                        clip.clip_len = clip.width / config.DEFAULT_PIXELS_PER_FRAME / config.DEFAULT_FPS
+                        clip.clip_len = clip.width / config.DEFAULT_PIXELS_PER_FRAME / self._video_fps
 
                         # Inset the new one
                         self._clips.insert(index + 1, new_clip)
@@ -187,7 +191,7 @@ class ClipTrackModel(QAbstractListModel):
     @Slot(int, float)
     def set_video_len(self, index, length):
         if self._clips:
-            self._clips[index].width = length * config.DEFAULT_FPS * config.DEFAULT_PIXELS_PER_FRAME
+            self._clips[index].width = length * self._video_fps * config.DEFAULT_PIXELS_PER_FRAME
             self._clips[index].clip_len = length
             self.widthChanged.emit()
 
@@ -549,9 +553,9 @@ class VideoController(QObject):
         self.undo_redo_manager.redo()
         self._update_undo_redo_signals()
 
-    @Slot(str, dict)
+    @Slot(str, dict, result="bool")
     def load_video(self, path, metadata):
-        self.video_processor.load_video(path, metadata)
+        return self.video_processor.load_video(path, metadata)
 
     @Slot()
     def toggle_play_pause(self):
@@ -615,6 +619,9 @@ class VideoController(QObject):
         self.frame_provider.updateFrame(q_image)
         self.frameReady.emit()
 
+
+class VideoLoadingError(Exception):
+    pass
 
 class VideoProcessor(QObject):
     frameProcessed = Signal(np.ndarray)
@@ -763,34 +770,38 @@ class VideoProcessor(QObject):
 
     # @Slot(str)
     def load_video(self, path, metadata):
-        self.video = cv2.VideoCapture(path)
+        try:
+            self.video = cv2.VideoCapture(path)
 
-        self.fps = int(self.video.get(cv2.CAP_PROP_FPS))
-        self.frame_width = int(self.video.get(cv2.CAP_PROP_FRAME_WIDTH))
-        self.frame_height = int(self.video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.total_frames = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
-        self.video_len = self.total_frames / self.fps if self.fps > 0 else 0
-        self.current_frame = 0
-        self._start_frames.append(0)
-        self._end_frames.append(self.total_frames)
+            self.fps = int(self.video.get(cv2.CAP_PROP_FPS))
+            self.frame_width = int(self.video.get(cv2.CAP_PROP_FRAME_WIDTH))
+            self.frame_height = int(self.video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            self.total_frames = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
+            self.video_len = self.total_frames / self.fps if self.fps > 0 else 0
+            self.current_frame = 0
+            self._start_frames.append(0)
+            self._end_frames.append(self.total_frames)
 
-        self._mouse_events = metadata.get("mouse_events", {}).get("move", {}) if metadata else {}
-        region = metadata.get("region", []) if metadata else []
-        if region:
-            x_offset, y_offset = region[:2]
-        else:
-            x_offset, y_offset = None, None
-        self._transforms = transforms.Compose({
-            "aspect_ratio": transforms.AspectRatio(self._aspect_ratio),
-            "cursor": transforms.Cursor(move_data=self._mouse_events, offsets=(x_offset, y_offset)),
-            "padding": transforms.Padding(padding=self.padding),
-            "inset": transforms.Inset(inset=self.inset, color=(0, 0, 0)),
-            "border_shadow": transforms.BorderShadow(radius=self.border_radius),
-            "background": transforms.Background(background=self._background),
-        })
+            self._mouse_events = metadata.get("mouse_events", {}).get("move", {}) if metadata else {}
+            region = metadata.get("region", []) if metadata else []
+            if region:
+                x_offset, y_offset = region[:2]
+            else:
+                x_offset, y_offset = None, None
+            self._transforms = transforms.Compose({
+                "aspect_ratio": transforms.AspectRatio(self._aspect_ratio),
+                "cursor": transforms.Cursor(move_data=self._mouse_events, offsets=(x_offset, y_offset)),
+                "padding": transforms.Padding(padding=self.padding),
+                "inset": transforms.Inset(inset=self.inset, color=(0, 0, 0)),
+                "border_shadow": transforms.BorderShadow(radius=self.border_radius),
+                "background": transforms.Background(background=self._background),
+            })
 
-        # Get first frame
-        self.get_frame()
+            # Get first frame
+            self.get_frame()
+            return True
+        except VideoLoadingError:
+            return False
 
     def get_frame(self):
         try:

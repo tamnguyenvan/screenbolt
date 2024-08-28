@@ -66,7 +66,7 @@ Window {
 
         FileDialog {
             id: videoFileDialog
-            nameFilters: ["Video files (*.mp4)"]
+            nameFilters: ["Video files (*.mp4 *.avi *.webm)"]
             onAccepted: {
                 startupWindow.visible = true
                 if (selectedFile) {
@@ -74,20 +74,36 @@ Window {
                         'mouse_events': {'click': [], 'move': {}},
                         'region': [],
                     }
-                    videoController.load_video(selectedFile,
+                    var success = videoController.load_video(selectedFile,
                                             metadata)
-                    clipTrackModel.set_video_len(0, videoController.video_len)
+                    if (success) {
+                        if (videoController.fps <= 0 || videoController.fps > 200 || videoController.total_frames <= 0) {
+                            errorDialog.open()
+                        } else {
+                            clipTrackModel.set_fps(videoController.fps)
+                            clipTrackModel.set_video_len(0, videoController.video_len)
 
-                    studioLoader.source = ""
-                    studioLoader.source = "qrc:/qml/studio/Studio.qml"
-                    studioLoader.item.showMaximized()
-                    startupWindow.hide()
+                            studioLoader.source = ""
+                            studioLoader.source = "qrc:/qml/studio/Studio.qml"
+                            studioLoader.item.showMaximized()
+                            startupWindow.hide()
+                        }
+                    } else {
+                        errorDialog.open()
+                    }
                 }
             }
 
             onRejected: {
                 startupWindow.showFullScreen()
             }
+        }
+
+        MessageDialog {
+            id: errorDialog
+            title: "Error"
+            text: "Unable to load video. Please check the file and try again."
+            buttons: MessageDialog.Ok
         }
 
         Keys.onPressed: event => {

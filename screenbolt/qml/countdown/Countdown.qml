@@ -70,12 +70,15 @@ Window {
                         'mouse_events': videoRecorder.mouse_events,
                         'region': videoRecorder.region,
                     }
-                    videoController.load_video(videoRecorder.output_path, metadata)
-                    clipTrackModel.set_video_len(0, videoController.video_len)
-                    studioLoader.source = ""
-                    studioLoader.source = "qrc:/qml/studio/Studio.qml"
-                    studioLoader.item.showMaximized()
-                    tray.hide()
+                    var success = videoController.load_video(videoRecorder.output_path, metadata)
+                    if (success) {
+                        clipTrackModel.set_fps(videoController.fps)
+                        clipTrackModel.set_video_len(0, videoController.video_len)
+                        studioLoader.source = ""
+                        studioLoader.source = "qrc:/qml/studio/Studio.qml"
+                        studioLoader.item.showMaximized()
+                        tray.hide()
+                    } else {}
                 }
             }
             MenuItem {
