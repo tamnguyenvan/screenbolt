@@ -1,0 +1,69 @@
+name: Build and Package for Windows
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        venv\Scripts\activate
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      shell: pwsh
+
+    - name: Compile resources
+      run: |
+        venv\Scripts\activate
+        cd screenbolt
+        python compile_resources.py
+
+    - name: Build with PyInstaller
+      run: |
+        venv\Scripts\activate
+        cd packaging/windows
+        pyinstaller --clean --noconfirm screenbolt.spec
+
+    - name: Update version in Inno Setup script
+      run: |
+        $version = "${{ github.ref_name }}"
+        $content = Get-Content -Path packaging/windows/screenbolt.iss -Raw
+        $newContent = $content -replace '#define MyAppVersion GetEnv\(''VERSION''\)', "#define MyAppVersion `"$version`""
+        $newContent | Set-Content -Path packaging/windows/screenbolt.iss
+      shell: pwsh
+
+    - name: Build installer with Inno Setup
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+      with:
+        path: packaging/windows/screenbolt.iss
+        options: /O+ /F"ScreenBolt-Setup-${{ github.ref_name }}"
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ScreenBolt-Setup-${{ github.ref_name }}.exe
+        path: D:\a\screenbolt\screenbolt\packaging\windows\Output\ScreenBolt-Setup-*.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: "**/Output/ScreenBolt-Setup-${{ github.ref_name }}.exe"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

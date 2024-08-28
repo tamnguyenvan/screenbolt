@@ -1,0 +1,60 @@
+name: Build and Package .deb
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Compile resources
+      run: |
+        source venv/bin/activate
+        cd screenbolt
+        python compile_resources.py
+
+    - name: Build with PyInstaller
+      run: |
+        source venv/bin/activate
+        cd packaging/linux
+        pyinstaller --clean --noconfirm screenbolt.spec
+
+    - name: Package as .deb
+      run: |
+        cd packaging/linux
+        chmod +x build.sh
+        ./build.sh "${GITHUB_REF_NAME}"
+        mv *.deb ../../
+
+    - name: Upload Debian package as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: screenbolt-${{ github.ref_name }}.deb
+        path: ./screenbolt_*.deb
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: screenbolt_*.deb
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
