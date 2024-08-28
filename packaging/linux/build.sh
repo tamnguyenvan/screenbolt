@@ -48,7 +48,7 @@ Categories=Utility;
 EOF
 
 # Copy the icon
-cp ../../ScreenBolt/resources/icons/screenbolt.png ${APP_NAME}_${VERSION}_${ARCH}/usr/share/icons/hicolor/256x256/apps/${APP_NAME,,}.png
+cp ../../screenbolt/resources/icons/screenbolt.png ${APP_NAME}_${VERSION}_${ARCH}/usr/share/icons/hicolor/256x256/apps/${APP_NAME,,}.png
 
 # Build the .deb package
 dpkg-deb --build ${APP_NAME}_${VERSION}_${ARCH}
