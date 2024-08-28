@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Application name
-APP_NAME="screenbolt"
+APP_NAME="ScreenBolt"
 # Version number
 VERSION=${1:-"1.0.0"}
 # Architecture
@@ -23,7 +23,7 @@ Architecture: $ARCH
 Maintainer: Tam Nguyen <tamnvhustcc@gmail.com>
 Description: Screen recording and editing application
  ScreenBolt is a desktop application for screen recording
- and video editing with features like background replacing and padding.
+ and video editing, featuring options like background replacement and padding.
 EOF
 
 # Copy the entire application directory
