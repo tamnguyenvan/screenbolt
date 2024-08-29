@@ -1,6 +1,7 @@
 import os
 import time
 import queue
+import hashlib
 from threading import Thread, Event
 
 import cv2
@@ -16,8 +17,8 @@ from PIL import Image
 
 from screenbolt import config
 from screenbolt import transforms
-from screenbolt.utils import generate_video_path
-
+from screenbolt.utils.general import generate_video_path
+from screenbolt.utils.cursor import get_cursor_image
 
 class UndoRedoManager:
     def __init__(self):
@@ -289,19 +290,19 @@ class VideoRecordingThread:
         self._region = None
         self._record_thread = None
         self._mouse_track_thread = None
-        self._mouse_events = {"move": {}, "click": []}
+        self._mouse_events = {"move": {}, "click": [], "cursors_map": {}}
         self._writer = None
         self._frame_index = 0
         self._frame_width = None
         self._frame_height = None
         self._is_stopped = Event()
         self._is_stopped.set()
-        self._fps = config.DEFAULT_FPS or 25
+        self._fps = config.DEFAULT_FPS or 30
         self._maximum_fps = 200
         self._monitor = {}
 
-        self._frame_queue = queue.Queue(maxsize=300)
-        self._processing_thread = None
+        # self._frame_queue = queue.Queue(maxsize=300)
+        # self._processing_thread = None
 
     @property
     def mouse_events(self):
@@ -315,16 +316,16 @@ class VideoRecordingThread:
         self._record_thread = Thread(target=self._recording)
         self._record_thread.start()
 
-        self._mouse_track_thread = Thread(target=self._mouse_track)
-        self._mouse_track_thread.start()
+        # self._mouse_track_thread = Thread(target=self._mouse_track)
+        # self._mouse_track_thread.start()
 
     def stop_recording(self):
         self._is_stopped.set()
         if self._record_thread is not None:
             self._record_thread.join()
 
-        if self._mouse_track_thread is not None:
-            self._mouse_track_thread.join()
+        # if self._mouse_track_thread is not None:
+        #     self._mouse_track_thread.join()
 
     def cancel_recording(self):
         self.stop_recording()
@@ -354,8 +355,8 @@ class VideoRecordingThread:
                 }
 
             # Start process_thread
-            self._processing_thread = Thread(target=self._process_frames)
-            self._processing_thread.start()
+            # self._processing_thread = Thread(target=self._process_frames)
+            # self._processing_thread.start()
 
             while not self._is_stopped.is_set():
                 t0 = time.time()
@@ -363,10 +364,25 @@ class VideoRecordingThread:
                 if frame is None:
                     break
 
-                try:
-                    self._frame_queue.put(frame, block=False)
-                except queue.Full:
-                    pass
+                # try:
+                #     self._frame_queue.put(frame, block=False)
+                # except queue.Full:
+                #     pass
+
+                frame = np.array(frame)
+                frame = frame[:, :, :3]
+                frame_height, frame_width = frame.shape[:2]
+
+                if self._writer is None:
+                    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+                    self._writer = cv2.VideoWriter(self._output_path, fourcc, self._fps, (frame_width, frame_height))
+                    self._frame_width = frame_width
+                    self._frame_height = frame_height
+
+                self._get_mouse_data()
+
+                self._frame_index += 1
+                self._writer.write(frame)
 
                 t1 = time.time()
 
@@ -374,8 +390,8 @@ class VideoRecordingThread:
                 sleep_duration = max(0.001, interval - read_time)
                 time.sleep(sleep_duration)
 
-            self._frame_queue.put(None)
-            self._processing_thread.join()
+            # self._frame_queue.put(None)
+            # self._processing_thread.join()
         except Exception as e:
             print(f"An error occurred: {e}")
         finally:
@@ -383,39 +399,66 @@ class VideoRecordingThread:
                 self._writer.release()
                 self._writer = None
 
-    def _mouse_track(self):
-        while not self._is_stopped.is_set():
-            x, y = pyautogui.position()
-            if (
-                self._frame_width
-                and self._frame_height
-                and self._monitor
-                and self._monitor["left"] <= x < self._monitor["left"] + self._monitor["width"]
-                and self._monitor["top"] <= y < self._monitor["top"] + self._monitor["height"]
-            ):
-                relative_x = (x - self._monitor["left"]) / self._frame_width
-                relative_y = (y - self._monitor["top"]) / self._frame_height
-                self._mouse_events["move"][self._frame_index] = (relative_x, relative_y, self._frame_index)
-            time.sleep(0.5 / self._fps)
+    def _get_mouse_data(self):
+        x, y = pyautogui.position()
+        if (
+            self._frame_width
+            and self._frame_height
+            and self._monitor
+            and self._monitor["left"] <= x < self._monitor["left"] + self._monitor["width"]
+            and self._monitor["top"] <= y < self._monitor["top"] + self._monitor["height"]
+        ):
+            relative_x = (x - self._monitor["left"]) / self._frame_width
+            relative_y = (y - self._monitor["top"]) / self._frame_height
 
-    def _process_frames(self):
-        while not self._is_stopped.is_set():
-            frame = self._frame_queue.get()
-            if frame is None:
-                break
+            # cursor shape
+            cursor_id = self._get_cursor()
 
-            frame = np.array(frame)
-            frame = frame[:, :, :3]
-            frame_height, frame_width = frame.shape[:2]
+            self._mouse_events["move"][self._frame_index] = (relative_x, relative_y, self._frame_index, cursor_id)
 
-            if self._writer is None:
-                fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-                self._writer = cv2.VideoWriter(self._output_path, fourcc, self._fps, (frame_width, frame_height))
-                self._frame_width = frame_width
-                self._frame_height = frame_height
+    def _get_cursor(self):
+        cursor_image = get_cursor_image()
+        t0 = time.time()
+        cursor_id = hashlib.sha256(cursor_image.tobytes()).hexdigest()
+        if cursor_id not in self._mouse_events["cursors_map"]:
+            self._mouse_events["cursors_map"][cursor_id] = cursor_image
+        return cursor_id
 
-            self._frame_index += 1
-            self._writer.write(frame)
+    # def _mouse_track(self):
+    #     while not self._is_stopped.is_set():
+    #         x, y = pyautogui.position()
+    #         if (
+    #             self._frame_width
+    #             and self._frame_height
+    #             and self._monitor
+    #             and self._monitor["left"] <= x < self._monitor["left"] + self._monitor["width"]
+    #             and self._monitor["top"] <= y < self._monitor["top"] + self._monitor["height"]
+    #         ):
+    #             relative_x = (x - self._monitor["left"]) / self._frame_width
+    #             relative_y = (y - self._monitor["top"]) / self._frame_height
+    #             self._mouse_events["move"][self._frame_index] = (relative_x, relative_y, self._frame_index)
+    #         time.sleep(0.5 / self._fps)
+
+    # def _process_frames(self):
+    #     while not self._is_stopped.is_set():
+    #         frame = self._frame_queue.get()
+    #         if frame is None:
+    #             break
+
+    #         frame = np.array(frame)
+    #         frame = frame[:, :, :3]
+    #         frame_height, frame_width = frame.shape[:2]
+
+    #         if self._writer is None:
+    #             fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    #             self._writer = cv2.VideoWriter(self._output_path, fourcc, self._fps, (frame_width, frame_height))
+    #             self._frame_width = frame_width
+    #             self._frame_height = frame_height
+
+    #         self._get_mouse_data()
+
+    #         self._frame_index += 1
+    #         self._writer.write(frame)
 
     def set_region(self, region):
         self._region = region
@@ -791,6 +834,7 @@ class VideoProcessor(QObject):
             self._end_frames.append(self.total_frames)
 
             self._mouse_events = metadata.get("mouse_events", {}).get("move", {}) if metadata else {}
+            self._cursors_map = metadata.get("mouse_events", {}).get("cursors_map", {}) if metadata else {}
             region = metadata.get("region", []) if metadata else []
             if region:
                 x_offset, y_offset = region[:2]
@@ -798,7 +842,7 @@ class VideoProcessor(QObject):
                 x_offset, y_offset = None, None
             self._transforms = transforms.Compose({
                 "aspect_ratio": transforms.AspectRatio(self._aspect_ratio),
-                "cursor": transforms.Cursor(move_data=self._mouse_events, offsets=(x_offset, y_offset)),
+                "cursor": transforms.Cursor(move_data=self._mouse_events, cursors_map=self._cursors_map, offsets=(x_offset, y_offset)),
                 "padding": transforms.Padding(padding=self.padding),
                 "inset": transforms.Inset(inset=self.inset, color=(0, 0, 0)),
                 "border_shadow": transforms.BorderShadow(radius=self.border_radius),

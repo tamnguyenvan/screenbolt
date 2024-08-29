@@ -76,8 +76,13 @@ Window {
                     }
                     var success = videoController.load_video(selectedFile,
                                             metadata)
+
+                    console.log(".log: ", success)
+
                     if (success) {
+                        console.log(videoController.fps, videoController.total_frames)
                         if (videoController.fps <= 0 || videoController.fps > 200 || videoController.total_frames <= 0) {
+                            console.log('error')
                             errorDialog.open()
                         } else {
                             clipTrackModel.set_fps(videoController.fps)
@@ -104,6 +109,7 @@ Window {
             title: "Error"
             text: "Unable to load video. Please check the file and try again."
             buttons: MessageDialog.Ok
+            modality: Qt.ApplicationModal
         }
 
         Keys.onPressed: event => {

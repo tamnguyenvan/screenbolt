@@ -4,6 +4,7 @@ import sys
 import re
 import time
 import platform
+from functools import lru_cache
 from pathlib import Path
 
 import cv2
@@ -11,8 +12,10 @@ import numpy as np
 import pyautogui
 from PIL import Image, ImageDraw, ImageFilter
 from PySide6.QtCore import QFile, QIODevice
+from PySide6.QtGui import QCursor
 
-from screenbolt.utils import hex_to_rgb, create_gradient_image
+from screenbolt.utils.general import hex_to_rgb, create_gradient_image
+from screenbolt.utils.cursor import get_cursor_image
 
 
 class BaseTransform:
@@ -156,7 +159,6 @@ class Padding(BaseTransform):
 
         return kwargs
 
-
 class Inset(BaseTransform):
     def __init__(self, inset, color=(0, 0, 0)):
         super().__init__()
@@ -185,13 +187,15 @@ class Inset(BaseTransform):
         return kwargs
 
 class Cursor(BaseTransform):
-    def __init__(self, move_data, offsets, size=64):
+    def __init__(self, move_data, cursors_map, offsets, size=64):
         super().__init__()
 
         self.size = size
         self.offsets = offsets
         self.move_data = move_data
+        self.cursors_map = cursors_map
         self.cursors = self._load()
+        self.default_cursors = self._load()
 
     def _load(self):
         sub_folder = get_os_name()
@@ -225,9 +229,14 @@ class Cursor(BaseTransform):
         image_arr = np.frombuffer(bytes_io.getvalue(), np.uint8)
         return cv2.imdecode(image_arr, cv2.IMREAD_UNCHANGED)
 
-    def blend(self, image, x, y):
+    def blend(self, image, x, y, cursor_id):
         # Get cursor image
-        cursor_image = self.cursors["arrow"]
+        if cursor_id in self.cursors_map:
+            cursor_image = self.cursors_map.get(cursor_id)
+        else:
+            cursor_image = self.default_cursors["arrow"]
+        scale = 1.5
+        cursor_image = cv2.resize(cursor_image, None, fx=scale, fy=scale, interpolation=cv2.INTER_LANCZOS4)
         cursor_height, cursor_width = cursor_image.shape[:2]
         image_height, image_width = image.shape[:2]
 
@@ -261,8 +270,8 @@ class Cursor(BaseTransform):
         if "start_frame" in kwargs and kwargs["start_frame"] in self.move_data:
             start_frame = kwargs["start_frame"]
             input = kwargs["input"]
-            x, y = self.move_data[start_frame][:2]
-            kwargs["input"] = self.blend(input, x, y)
+            x, y, _, cursor_id = self.move_data[start_frame]
+            kwargs["input"] = self.blend(input, x, y, cursor_id)
 
         return kwargs
 
@@ -273,21 +282,26 @@ class BorderShadow(BaseTransform):
         self.shadow_blur = shadow_blur
         self.shadow_opacity = shadow_opacity
 
-    # @lru_cache(maxsize=100)
+    @lru_cache(maxsize=100)
     def create_rounded_mask(self, size):
         mask = Image.new('L', size, 0)
         draw = ImageDraw.Draw(mask)
         draw.rounded_rectangle([(0, 0), size], self.radius, fill=255)
+        mask = np.array(mask)
         return mask
 
-    # @lru_cache(maxsize=100)
+    @lru_cache(maxsize=100)
     def create_shadow(self, background_size, foreground_size, x_offset, y_offset):
         shadow = Image.new('L', background_size, 0)
         shadow_draw = ImageDraw.Draw(shadow)
         shadow_draw.rounded_rectangle([(x_offset, y_offset),
                                        (x_offset + foreground_size[0], y_offset + foreground_size[1])],
                                       self.radius, fill=int(255 * self.shadow_opacity))
-        return shadow.filter(ImageFilter.GaussianBlur(self.shadow_blur))
+        shadow = np.array(shadow.filter(ImageFilter.GaussianBlur(self.shadow_blur)))
+        shadow = cv2.cvtColor(shadow, cv2.COLOR_GRAY2BGR)
+        shadow = shadow.astype(np.float32) / 255.0
+        shadow = 1 - shadow
+        return shadow
 
     def apply_border_radius_with_shadow(
         self,
@@ -301,25 +315,19 @@ class BorderShadow(BaseTransform):
 
         # Create mask
         mask = self.create_rounded_mask(foreground_size)
-        mask = np.array(mask)
 
         # Create shadow
-        shadow = np.array(self.create_shadow(background_size, foreground_size, x_offset, y_offset))
-        shadow = cv2.cvtColor(shadow, cv2.COLOR_GRAY2BGR)
-        shadow = shadow.astype(np.float32) / 255.0
+        shadow = self.create_shadow(background_size, foreground_size, x_offset, y_offset)
         background = background.astype(np.float32) / 255.0
 
-        # Overlay shadow onto background
-        result = (1.0 - shadow) * background
+        # Vectorized shadow overlay
+        result = np.multiply(shadow, background)
         result = (result * 255).astype(np.uint8)
 
         # Optimized blending
         roi = result[y_offset:y_offset+foreground_size[1], x_offset:x_offset+foreground_size[0]]
-        mask_inv = cv2.bitwise_not(mask)
-        img1_bg = cv2.bitwise_and(roi, roi, mask=mask_inv)
-        img2_fg = cv2.bitwise_and(foreground, foreground, mask=mask)
-        dst = cv2.add(img1_bg, img2_fg)
-        result[y_offset:y_offset+foreground_size[1], x_offset:x_offset+foreground_size[0]] = dst
+        np.putmask(roi, cv2.merge([mask, mask, mask]), foreground)
+        result[y_offset:y_offset+foreground_size[1], x_offset:x_offset+foreground_size[0]] = roi
 
         return result.astype(np.uint8)
 
