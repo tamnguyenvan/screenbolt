@@ -55,7 +55,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: screenbolt-${{ github.ref_name }}.deb
-        path: ./screenbolt_*.deb
+        path: ./ScreenBolt_*.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -63,7 +63,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: screenbolt-${{ github.ref_name }}.rpm
-        path: ./screenbolt_*.rpm
+        path: ./ScreenBolt_*.rpm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -71,7 +71,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          screenbolt_*.deb
-          screenbolt_*.rpm
+          ScreenBolt_*.deb
+          ScreenBolt_*.rpm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

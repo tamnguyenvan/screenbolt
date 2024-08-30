@@ -75,4 +75,6 @@ EOF
 # Build the RPM package
 rpmbuild -bb ~/rpmbuild/SPECS/${APP_NAME,,}.spec
 
-echo "RPM package created: ~/rpmbuild/RPMS/${ARCH}/${APP_NAME,,}-${VERSION}-${RELEASE}.${ARCH}.rpm"
+mv ~/rpmbuild/rpms/${arch}/${app_name,,}-${version}-${release}.${arch}.rpm ./
+
+echo "RPM package created: ~/rpmbuild/rpms/${arch}/${app_name,,}-${version}-${release}.${arch}.rpm"
