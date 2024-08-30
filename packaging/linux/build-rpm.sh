@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Application name
-APP_NAME="ScreenBolt"
+APP_NAME="screenbolt"
 # Version number
 VERSION=${1:-"1.0.0"}
 # Release number
@@ -45,7 +45,7 @@ Version:        $VERSION
 Release:        $RELEASE
 Summary:        Screen recording and editing application
 License:        Proprietary
-URL:            https://example.com/${APP_NAME,,}
+URL:            https://www.screenbolt.com
 BuildArch:      $ARCH
 
 %description
