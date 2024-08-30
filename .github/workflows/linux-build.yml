@@ -42,20 +42,20 @@ jobs:
         cd packaging/linux
         chmod +x build-deb.sh
         ./build-deb.sh "${GITHUB_REF_NAME}"
-        mv screenbolt_*.deb ../../
+        mv screenbolt*.deb ../../
 
     - name: Package as .rpm
       run: |
         cd packaging/linux
         chmod +x build-rpm.sh
         ./build-rpm.sh "${GITHUB_REF_NAME}"
-        mv screenbolt_*.rpm ../../
+        mv screenbolt*.rpm ../../
 
     - name: Upload Debian package as artifact
       uses: actions/upload-artifact@v3
       with:
         name: screenbolt-${{ github.ref_name }}.deb
-        path: ./screenbolt_*.deb
+        path: ./screenbolt*.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -63,7 +63,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: screenbolt-${{ github.ref_name }}.rpm
-        path: ./screenbolt_*.rpm
+        path: ./screenbolt*.rpm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -71,7 +71,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          screenbolt_*.deb
-          screenbolt_*.rpm
+          screenbolt*.deb
+          screenbolt*.rpm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
