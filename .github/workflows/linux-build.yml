@@ -1,4 +1,4 @@
-name: Build and Package .deb
+name: Build and Package Linux
 
 on:
   push:
@@ -42,14 +42,14 @@ jobs:
         cd packaging/linux
         chmod +x build-deb.sh
         ./build-deb.sh "${GITHUB_REF_NAME}"
-        mv *.deb ../../
+        mv screenbolt_*.deb ../../
 
     - name: Package as .rpm
       run: |
         cd packaging/linux
         chmod +x build-rpm.sh
         ./build-rpm.sh "${GITHUB_REF_NAME}"
-        mv *.rpm ../../
+        mv screenbolt_*.rpm ../../
 
     - name: Upload Debian package as artifact
       uses: actions/upload-artifact@v3
