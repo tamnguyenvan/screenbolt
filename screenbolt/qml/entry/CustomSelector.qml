@@ -22,7 +22,8 @@ Item {
         y: Screen.height * 0.25
         width: Screen.width / 2
         height: Screen.height / 2
-        color: "transparent"
+        // color: "transparent"
+        color: Qt.rgba(0.91, 0.36, 0.05, 0.3)
         border.width: customSelector.borderWidth
         border.color: customSelector.color
 

@@ -34,7 +34,8 @@ Window {
         Rectangle {
             id: screenModeSelector
             anchors.fill: parent
-            color: "transparent"
+            // color: "transparent"
+            color: Qt.rgba(0.91, 0.36, 0.05, 0.3)
             border.width: 2
             border.color: "#fff"
             visible: startupWindow.selectedMode == "screen"
@@ -50,7 +51,7 @@ Window {
                 y: windowController.top
                 width: Screen.desktopAvailableWidth
                 height: Screen.desktopAvailableHeight
-                color: "transparent"
+                color: Qt.rgba(0.91, 0.36, 0.05, 0.3)
                 border.width: 2
                 border.color: "#fff"
             }

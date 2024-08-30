@@ -44,12 +44,12 @@ jobs:
         ./build-deb.sh "${GITHUB_REF_NAME}"
         mv screenbolt*.deb ../../
 
-    - name: Package as .rpm
-      run: |
-        cd packaging/linux
-        chmod +x build-rpm.sh
-        ./build-rpm.sh "${GITHUB_REF_NAME}"
-        mv screenbolt*.rpm ../../
+    # - name: Package as .rpm
+    #   run: |
+    #     cd packaging/linux
+    #     chmod +x build-rpm.sh
+    #     ./build-rpm.sh "${GITHUB_REF_NAME}"
+    #     mv screenbolt*.rpm ../../
 
     - name: Upload Debian package as artifact
       uses: actions/upload-artifact@v3
@@ -59,19 +59,19 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Upload RPM package as artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: screenbolt-${{ github.ref_name }}.rpm
-        path: ./screenbolt*.rpm
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Upload RPM package as artifact
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: screenbolt-${{ github.ref_name }}.rpm
+    #     path: ./screenbolt*.rpm
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
           screenbolt*.deb
-          screenbolt*.rpm
+          # screenbolt*.rpm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
