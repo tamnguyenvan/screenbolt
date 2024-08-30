@@ -54,7 +54,7 @@ Window {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 20
+            anchors.margins: 15
             spacing: 0
 
             TopBar {
@@ -113,6 +113,27 @@ Window {
 
     onClosing: {
         Qt.quit()
+    }
+
+    Shortcut {
+        sequence: "Space"
+        onActivated: {
+            videoController.toggle_play_pause()
+        }
+    }
+
+    Shortcut {
+        sequence: "Left"
+        onActivated: {
+            videoController.prev_frame()
+        }
+    }
+
+    Shortcut {
+        sequence: "Right"
+        onActivated: {
+            videoController.next_frame()
+        }
     }
 
     Shortcut {

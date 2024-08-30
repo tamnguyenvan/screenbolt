@@ -50,15 +50,12 @@ def get_cursor_image_linux():
 
     root = d.screen().root
 
-    # Lấy hình ảnh con trỏ
     image = d.xfixes_get_cursor_image(root)
     cursor_image = image.cursor_image
     width, height = image.width, image.height
 
-    # Chuyển đổi dữ liệu con trỏ thành mảng numpy
     cursor_data = np.array(cursor_image, dtype=np.uint32).reshape(height, width)
 
-    # Chuyển đổi từ ARGB sang RGBA
     rgba = np.zeros((height, width, 4), dtype=np.uint8)
     rgba[..., 0] = (cursor_data >> 16) & 0xFF  # Red
     rgba[..., 1] = (cursor_data >> 8) & 0xFF   # Green

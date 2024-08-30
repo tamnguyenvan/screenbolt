@@ -850,7 +850,8 @@ class VideoProcessor(QObject):
             })
 
             # Get first frame
-            self.get_frame()
+            # self.get_frame()
+            self.jump_to_frame(0)
             return True
         except VideoLoadingError:
             return False

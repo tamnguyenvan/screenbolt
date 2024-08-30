@@ -1,8 +1,8 @@
 import QtQuick
-import QtQuick.Window 2.15
-import QtQuick.Layouts 1.15
+import QtQuick.Window
+import QtQuick.Layouts
 import QtQuick.Effects
-import QtQuick.Controls.Material 2.15
+import QtQuick.Controls.Material
 import QtQuick.Dialogs
 import "../components"
 
@@ -77,12 +77,8 @@ Window {
                     var success = videoController.load_video(selectedFile,
                                             metadata)
 
-                    console.log(".log: ", success)
-
                     if (success) {
-                        console.log(videoController.fps, videoController.total_frames)
                         if (videoController.fps <= 0 || videoController.fps > 200 || videoController.total_frames <= 0) {
-                            console.log('error')
                             errorDialog.open()
                         } else {
                             clipTrackModel.set_fps(videoController.fps)

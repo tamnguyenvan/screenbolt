@@ -1,7 +1,8 @@
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Controls
-import Qt.labs.platform
+import QtQuick.Layouts
+import QtQuick.Controls.Material
+import QtQuick.Dialogs
 
 Item {
     id: imagePage
@@ -22,17 +23,12 @@ Item {
 
             DropArea {
                 anchors.fill: parent
-                onDropped: {
-                    if (drop.hasUrls) {
-                        imagePreview.source = drop.urls[0]
-                        videoController.background = {
-                            "type": "image",
-                            "value": drop.urls[0]
-                        }
-                        if (!isPlaying) {
-                            videoController.get_current_frame()
-                        }
-                    }
+                onEntered: (drag) => {
+                    drag.accept (Qt.LinkAction);
+                }
+
+                onDropped: (drop) => {
+                    handleDrop(drop)
                 }
 
                 Image {
@@ -62,14 +58,31 @@ Item {
         title: "Select an image"
         nameFilters: ["Image files (*.png *.jpg *.bmp)"]
         onAccepted: {
-            imagePreview.source = fileDialog.currentFile
+            handleFileSelection(fileDialog.currentFile)
+        }
+    }
+
+    function handleDrop(drop) {
+        if (drop.hasUrls) {
+            imagePreview.source = drop.urls[0]
             videoController.background = {
                 "type": "image",
-                "value": fileDialog.currentFile
+                "value": drop.urls[0]
             }
             if (!isPlaying) {
                 videoController.get_current_frame()
             }
+        }
+    }
+
+    function handleFileSelection(file) {
+        imagePreview.source = file
+        videoController.background = {
+            "type": "image",
+            "value": file
+        }
+        if (!isPlaying) {
+            videoController.get_current_frame()
         }
     }
 }

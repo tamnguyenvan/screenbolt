@@ -26,6 +26,7 @@ Item {
         }
     }
 
+    // Full screen button
     ToolButton {
         id: fullScreenButton
         anchors.right: parent.right
@@ -42,6 +43,7 @@ Item {
         }
     }
 
+    // Full screen window
     Window {
         id: fullScreenWindow
         width: Screen.width
@@ -64,10 +66,15 @@ Item {
             Keys.onPressed: event => {
                             if (event.key === Qt.Key_Escape) {
                                 fullScreenWindow.hide()
+                            } else if (event.key === Qt.Key_Space) {
+                                videoController.toggle_play_pause()
+                            } else if (event.key === Qt.Key_Left) {
+                                videoController.prev_frame()
+                            } else if (event.key === Qt.Key_Right) {
+                                videoController.next_frame()
                             }
             }
         }
-
     }
 
     Connections {
