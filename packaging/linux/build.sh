@@ -12,6 +12,7 @@ mkdir -p ${APP_NAME}_${VERSION}_${ARCH}/DEBIAN
 mkdir -p ${APP_NAME}_${VERSION}_${ARCH}/opt/${APP_NAME,,}
 mkdir -p ${APP_NAME}_${VERSION}_${ARCH}/usr/share/applications
 mkdir -p ${APP_NAME}_${VERSION}_${ARCH}/usr/share/icons/hicolor/256x256/apps
+mkdir -p ${APP_NAME}_${VERSION}_${ARCH}/usr/bin
 
 # Create the control file
 cat << EOF > ${APP_NAME}_${VERSION}_${ARCH}/DEBIAN/control
@@ -29,13 +30,8 @@ EOF
 # Copy the entire application directory
 cp -R dist/ScreenBolt/* ${APP_NAME}_${VERSION}_${ARCH}/opt/${APP_NAME,,}/
 
-# Create a wrapper script in /usr/bin
-mkdir -p ${APP_NAME}_${VERSION}_${ARCH}/usr/bin
-cat << EOF > ${APP_NAME}_${VERSION}_${ARCH}/usr/bin/${APP_NAME,,}
-#!/bin/bash
-/opt/${APP_NAME,,}/ScreenBolt "\$@"
-EOF
-chmod +x ${APP_NAME}_${VERSION}_${ARCH}/usr/bin/${APP_NAME,,}
+# Create a soft link in /usr/bin instead of a wrapper script
+ln -s /opt/${APP_NAME,,}/ScreenBolt ${APP_NAME}_${VERSION}_${ARCH}/usr/bin/${APP_NAME,,}
 
 # Create the .desktop file
 cat << EOF > ${APP_NAME}_${VERSION}_${ARCH}/usr/share/applications/${APP_NAME,,}.desktop
