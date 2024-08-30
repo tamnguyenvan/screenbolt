@@ -1,11 +1,14 @@
-name: Build and Package .rpm
+name: Build and Package .deb
+
 on:
   push:
     tags:
-      - '..*'
+      - '*.*.*'
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -34,29 +37,24 @@ jobs:
         cd packaging/linux
         pyinstaller --clean --noconfirm screenbolt.spec
 
-    - name: Install RPM build tools
-      run: |
-        sudo apt-get update
-        sudo apt-get install rpm -y
-
-    - name: Package as .rpm
+    - name: Package as .deb
       run: |
         cd packaging/linux
-        chmod +x build-rpm.sh
-        ./build-rpm.sh "${GITHUB_REF_NAME}"
-        mv .rpm ../../
+        chmod +x build-deb.sh
+        ./build-deb.sh "${GITHUB_REF_NAME}"
+        mv *.deb ../../
 
-    - name: Upload RPM package as artifact
+    - name: Upload Debian package as artifact
       uses: actions/upload-artifact@v3
       with:
-        name: screenbolt-${{ github.refname }}.rpm
-        path: ./ScreenBolt.rpm
+        name: screenbolt-${{ github.ref_name }}.deb
+        path: ./ScreenBolt_*.deb
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        files: ScreenBolt*.rpm
+        files: ScreenBolt_*.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
