@@ -77,4 +77,12 @@ EOF
 # Build the RPM package
 rpmbuild -bb ~/rpmbuild/SPECS/${PKG_NAME}.spec
 
-echo "RPM package created: ${PKG_NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm"
+# Move the RPM to the current directory
+RPM_FILE=~/rpmbuild/RPMS/${ARCH}/${PKG_NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm
+if [ -f "$RPM_FILE" ]; then
+    mv "$RPM_FILE" .
+    echo "RPM package created and moved: ${PKG_NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm"
+else
+    echo "Error: RPM file not found at $RPM_FILE"
+    exit 1
+fi
