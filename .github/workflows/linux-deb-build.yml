@@ -1,0 +1,62 @@
+name: Build and Package .rpm
+on:
+  push:
+    tags:
+      - '..*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements-linux.txt
+
+    - name: Compile resources
+      run: |
+        source venv/bin/activate
+        cd screenbolt
+        python compile_resources.py
+
+    - name: Build with PyInstaller
+      run: |
+        source venv/bin/activate
+        cd packaging/linux
+        pyinstaller --clean --noconfirm screenbolt.spec
+
+    - name: Install RPM build tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install rpm -y
+
+    - name: Package as .rpm
+      run: |
+        cd packaging/linux
+        chmod +x build-rpm.sh
+        ./build-rpm.sh "${GITHUB_REF_NAME}"
+        mv .rpm ../../
+
+    - name: Upload RPM package as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: screenbolt-${{ github.refname }}.rpm
+        path: ./ScreenBolt.rpm
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ScreenBolt*.rpm
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
