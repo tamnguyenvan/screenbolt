@@ -18,7 +18,7 @@ from PIL import Image
 from screenbolt import config
 from screenbolt import transforms
 from screenbolt.utils.general import generate_video_path
-from screenbolt.utils.cursor import get_cursor_image
+# from screenbolt.utils.cursor import get_cursor_image
 
 class UndoRedoManager:
     def __init__(self):
@@ -412,17 +412,18 @@ class VideoRecordingThread:
             relative_y = (y - self._monitor["top"]) / self._frame_height
 
             # cursor shape
-            cursor_id = self._get_cursor()
+            # cursor_id = self._get_cursor()
+            cursor_id = ''
 
             self._mouse_events["move"][self._frame_index] = (relative_x, relative_y, self._frame_index, cursor_id)
 
-    def _get_cursor(self):
-        cursor_image = get_cursor_image()
-        t0 = time.time()
-        cursor_id = hashlib.sha256(cursor_image.tobytes()).hexdigest()
-        if cursor_id not in self._mouse_events["cursors_map"]:
-            self._mouse_events["cursors_map"][cursor_id] = cursor_image
-        return cursor_id
+    # def _get_cursor(self):
+    #     cursor_image = get_cursor_image()
+    #     t0 = time.time()
+    #     cursor_id = hashlib.sha256(cursor_image.tobytes()).hexdigest()
+    #     if cursor_id not in self._mouse_events["cursors_map"]:
+    #         self._mouse_events["cursors_map"][cursor_id] = cursor_image
+    #     return cursor_id
 
     # def _mouse_track(self):
     #     while not self._is_stopped.is_set():

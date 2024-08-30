@@ -15,7 +15,7 @@ from PySide6.QtCore import QFile, QIODevice
 from PySide6.QtGui import QCursor
 
 from screenbolt.utils.general import hex_to_rgb, create_gradient_image
-from screenbolt.utils.cursor import get_cursor_image
+# from screenbolt.utils.cursor import get_cursor_image
 
 
 class BaseTransform:
@@ -274,7 +274,6 @@ class Cursor(BaseTransform):
             kwargs["input"] = self.blend(input, x, y, cursor_id)
 
         return kwargs
-
 
 class BorderShadow(BaseTransform):
     def __init__(self, radius, shadow_blur: int = 20, shadow_opacity: float = 0.65) -> None:

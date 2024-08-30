@@ -4,4 +4,4 @@ Pillow
 mss
 pyautogui
 pyinstaller
-python-xlib
+# python-xlib
