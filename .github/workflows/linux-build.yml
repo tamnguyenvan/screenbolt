@@ -63,7 +63,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: screenbolt-${{ github.ref_name }}.rpm
-        path: ./screenbolt_*.rpm
+        path: /home/runner/rpmbuild/BUILDROOT/screenbolt_*.rpm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

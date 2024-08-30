@@ -77,7 +77,4 @@ EOF
 # Build the RPM package
 rpmbuild -bb ~/rpmbuild/SPECS/${PKG_NAME}.spec
 
-# Move the RPM to the current directory
-mv ~/rpmbuild/RPMS/${ARCH}/${PKG_NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm ./
-
 echo "RPM package created: ${PKG_NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm"
