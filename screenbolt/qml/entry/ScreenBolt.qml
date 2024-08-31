@@ -18,6 +18,7 @@ Window {
     property string selectedMode: "screen"
     property bool showCountdownFlag: false
     property bool showStudioFlag: false
+    readonly property string selectionColor: "#e85c0d"
 
     Item {
         id: homeItem
@@ -34,10 +35,9 @@ Window {
         Rectangle {
             id: screenModeSelector
             anchors.fill: parent
-            // color: "transparent"
             color: Qt.rgba(0.91, 0.36, 0.05, 0.3)
             border.width: 2
-            border.color: "#fff"
+            border.color: startupWindow.selectionColor
             visible: startupWindow.selectedMode == "screen"
         }
 
@@ -53,7 +53,7 @@ Window {
                 height: Screen.desktopAvailableHeight
                 color: Qt.rgba(0.91, 0.36, 0.05, 0.3)
                 border.width: 2
-                border.color: "#fff"
+                border.color: startupWindow.selectionColor
             }
         }
 

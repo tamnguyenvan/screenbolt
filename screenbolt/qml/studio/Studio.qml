@@ -12,7 +12,7 @@ Window {
     readonly property int defaultHeight: Screen.height
     readonly property int minWidth: Screen.width / 2
     readonly property int minHeight: Screen.height / 2
-    readonly property string accentColor: "#0077b6"
+    readonly property string accentColor: "#e85c0d"
     readonly property string backgroundColor: "#0B0D0F"
 
     width: defaultWidth

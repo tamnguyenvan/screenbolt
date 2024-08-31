@@ -1,6 +1,6 @@
 import QtQuick
-import QtQuick.Window 2.15
-import QtQuick.Controls.Material 2.15
+import QtQuick.Window
+import QtQuick.Controls.Material
 
 Window {
     id: mainWindow
@@ -8,7 +8,6 @@ Window {
     height: Screen.desktopAvailableHeight
     visible: true
     color: "transparent"
-
     Component.onCompleted: {
         windowController.get_window_position()
         screenbolt.source = ""

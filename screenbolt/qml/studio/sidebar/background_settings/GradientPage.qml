@@ -21,7 +21,7 @@ Item {
         Rectangle {
             id: gradientPreview
             Layout.fillWidth: true
-            Layout.preferredHeight: 30
+            Layout.preferredHeight: 50
             radius: 4
 
             Gradient {
@@ -43,18 +43,20 @@ Item {
         GridLayout {
             columns: 2
             Layout.fillWidth: true
+            Layout.preferredHeight: 30
 
             Label {
                 text: "Angle:"
             }
 
             SpinBox {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 30
                 from: 0
                 to: 360
                 value: gradientAngle
                 stepSize: 1
                 editable: true
-                Layout.fillWidth: true
 
                 onValueChanged: gradientAngle = value
             }
@@ -89,22 +91,43 @@ Item {
         }
 
         // Apply
-        Button {
-            text: qsTr("Apply")
-            Layout.alignment: Qt.AlignCenter
-            Material.background: "#4329F4"
-            Material.foreground: "white"
+        Item {
+            Layout.fillWidth: true
 
-            onClicked: {
-                videoController.background = {
-                    "type": "gradient",
-                    "value": {
-                        "colors": gradientColors,
-                        "angle": gradientAngle
+            Button {
+                anchors.centerIn: parent
+                text: qsTr("Apply")
+                Layout.alignment: Qt.AlignCenter
+                Material.background: studioWindow.accentColor
+
+                // onClicked: {
+                //     videoController.background = {
+                //         "type": "gradient",
+                //         "value": {
+                //             "colors": gradientColors,
+                //             "angle": gradientAngle
+                //         }
+                //     }
+                //     if (!isPlaying) {
+                //         videoController.get_current_frame()
+                //     }
+                // }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        videoController.background = {
+                            "type": "gradient",
+                            "value": {
+                                "colors": gradientColors,
+                                "angle": gradientAngle
+                            }
+                        }
+                        if (!isPlaying) {
+                            videoController.get_current_frame()
+                        }
                     }
-                }
-                if (!isPlaying) {
-                    videoController.get_current_frame()
                 }
             }
         }

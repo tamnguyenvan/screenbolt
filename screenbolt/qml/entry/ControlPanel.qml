@@ -1,8 +1,9 @@
 import QtQuick
 import QtQuick.Effects
-import QtQuick.Controls 2.15
+import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
+import QtQuick.Controls.Material
 import "../components"
 
 Item {
@@ -98,6 +99,32 @@ Item {
                 Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+
+                    // ComboBox {
+                    //     id: fpsComboBox
+                    //     anchors.centerIn: parent
+                    //     currentIndex: 0
+                    //     model: ["25FPS", "30FPS", "60FPS"]
+                    //     onCurrentIndexChanged: {
+                    //         console.log(model[currentIndex].toLowerCase())
+                    //     }
+                    //     contentItem: Text {
+                    //         leftPadding: 10
+                    //         text: fpsComboBox.displayText
+                    //         font: fpsComboBox.font
+                    //         color: fpsComboBox.pressed ? "gray" : "gray"
+                    //         verticalAlignment: Text.AlignVCenter
+                    //         elide: Text.ElideRight
+                    //     }
+                    //     background: Rectangle {
+                    //         implicitWidth: 100
+                    //         implicitHeight: 30
+                    //         color: fpsComboBox.pressed ? "#1c1c1c" : "#1c1c1c"
+                    //         border.color: fpsComboBox.pressed ? "#1c1c1c" : "#1c1c1c"
+                    //         border.width: fpsComboBox.visualFocus ? 2 : 1
+                    //         radius: 2
+                    //     }
+                    // }
                 }
 
                 // Record button

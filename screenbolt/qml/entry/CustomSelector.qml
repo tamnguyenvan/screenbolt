@@ -14,7 +14,7 @@ Item {
     readonly property int minSize: 50
     readonly property int rulerSize: 20
     readonly property int borderWidth: 2
-    readonly property string color: "#fff"
+    readonly property string color: "#e85c0d"
 
     Rectangle {
         id: background
@@ -58,17 +58,13 @@ Item {
             color: customSelector.color
             anchors.left: parent.left
             anchors.top: parent.top
-            bottomRightRadius: width / 3
+            bottomRightRadius: width / 2
 
             MouseArea {
                 anchors.fill: parent
                 cursorShape: drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
                 drag {
                     target: parent
-                    minimumX: 0
-                    minimumY: 0
-                    maximumX: customSelector.width - parent.width
-                    maximumY: customSelector.height - parent.height
                     smoothed: true
                 }
                 onMouseXChanged: {
@@ -105,7 +101,7 @@ Item {
             width: customSelector.rulerSize
             height: customSelector.rulerSize
             color: customSelector.color
-            bottomLeftRadius: width / 3
+            bottomLeftRadius: width / 2
             anchors.right: parent.right
             anchors.top: parent.top
 
@@ -114,10 +110,6 @@ Item {
                 cursorShape: drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
                 drag {
                     target: parent
-                    minimumX: 0
-                    minimumY: 0
-                    maximumX: customSelector.width - parent.width
-                    maximumY: customSelector.height - parent.height
                     smoothed: true
                 }
                 onMouseXChanged: {
@@ -152,14 +144,17 @@ Item {
             width: customSelector.rulerSize
             height: customSelector.rulerSize
             color: customSelector.color
-            topLeftRadius: width / 3
+            topLeftRadius: width / 2
             anchors.right: parent.right
             anchors.bottom: parent.bottom
 
             MouseArea {
                 anchors.fill: parent
                 cursorShape: drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-                drag { target: parent; axis: Drag.XAxis }
+                drag {
+                    target: parent
+                    smoothed: true
+                }
                 onMouseXChanged: {
                     if(drag.active){
                         background.width = background.width + mouseX
@@ -191,14 +186,17 @@ Item {
             width: customSelector.rulerSize
             height: customSelector.rulerSize
             color: customSelector.color
-            topRightRadius: width / 3
+            topRightRadius: width / 2
             anchors.left: parent.left
             anchors.bottom: parent.bottom
 
             MouseArea {
                 anchors.fill: parent
                 cursorShape: drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-                drag { target: parent; axis: Drag.XAxis }
+                drag {
+                    target: parent
+                    smoothed: true
+                }
                 onMouseXChanged: {
                     if(drag.active){
                         background.width = background.width - mouseX
