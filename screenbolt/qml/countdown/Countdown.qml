@@ -4,7 +4,7 @@ import QtQuick.Effects
 import Qt.labs.platform
 
 Window {
-    id: coutndownWindow
+    id: countdownWindow
     visible: true
     width: Math.max(Screen.height / 3, 400)
     height: Math.max(Screen.height / 3, 400)
@@ -12,7 +12,9 @@ Window {
     y: (Screen.desktopAvailableHeight - height) / 2
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     color: "transparent"
+
     readonly property int countdownTime: 3
+    property bool isSystemTrayAvailable: false
 
     Item {
         anchors.fill: parent
@@ -20,7 +22,7 @@ Window {
             id: countdown
             anchors.fill: parent
             color: "#303030"
-            radius: coutndownWindow.width / 2
+            radius: countdownWindow.width / 2
             opacity: 0.9
             Timer {
                 id: timer
@@ -33,8 +35,12 @@ Window {
                     if (count == 0) {
                         timer.stop()
                         videoRecorder.start_recording()
-                        tray.visible = true
-                        coutndownWindow.visible = false
+                        if (isSystemTrayAvailable) {
+                            tray.visible = true
+                            countdownWindow.visible = false
+                        } else {
+                            countdownWindow.hide()
+                        }
                     }
                 }
             }
@@ -42,7 +48,7 @@ Window {
 
         Rectangle {
             anchors.fill: parent
-            radius: coutndownWindow.width / 2
+            radius: countdownWindow.width / 2
             color: "transparent"
             border.width: 3
             border.color: "#c4c4c4"
@@ -77,7 +83,12 @@ Window {
                         studioLoader.source = ""
                         studioLoader.source = "qrc:/qml/studio/Studio.qml"
                         studioLoader.item.showMaximized()
-                        tray.hide()
+                        // tray.hide()
+                        if (isSystemTrayAvailable) {
+                            tray.hide()
+                        } else {
+                            coutndownWindow.show()
+                        }
                     } else {}
                 }
             }
@@ -93,5 +104,9 @@ Window {
 
     Loader {
         id: studioLoader
+    }
+
+    Component.onCompleted: {
+        isSystemTrayAvailable = systemTrayChecker.isAvailable
     }
 }

@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 
+from PySide6.QtWidgets import QSystemTrayIcon
+from PySide6.QtCore import QObject, Property
 from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
 
@@ -10,9 +12,18 @@ from screenbolt import rc_images
 from screenbolt.model import ClipTrackModel, WindowController, VideoController, VideoRecorder
 from screenbolt.image_provider import FrameImageProvider
 
+class SystemTrayChecker(QObject):
+    def __init__(self):
+        super().__init__()
+        self._is_available = QSystemTrayIcon.isSystemTrayAvailable()
+
+    @Property(bool, constant=True)
+    def isAvailable(self):
+        return self._is_available
 
 def main():
     app = QGuiApplication(sys.argv)
+    system_tray_checker = SystemTrayChecker()
 
     # Determine the path to the icon
     if getattr(sys, 'frozen', False):
@@ -40,6 +51,7 @@ def main():
     engine.rootContext().setContextProperty("windowController", window_controller)
     engine.rootContext().setContextProperty("videoController", video_controller)
     engine.rootContext().setContextProperty("videoRecorder", video_recorder)
+    engine.rootContext().setContextProperty("systemTrayChecker", system_tray_checker)
 
     qml_file = "qrc:/qml/entry/main.qml"
     engine.load(qml_file)
