@@ -20,6 +20,7 @@ jobs:
 
     - name: Install dependencies
       run: |
+        sudo apt-get install -y libxcb-cursor-dev
         python -m venv venv
         source venv/bin/activate
         pip install --upgrade pip
@@ -72,6 +73,5 @@ jobs:
       with:
         files: |
           screenbolt*.deb
-          # screenbolt*.rpm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
