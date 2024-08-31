@@ -14,7 +14,7 @@ a = Analysis(
         ('../../screenbolt/resources/icons/screenbolt.ico', 'resources/icons/'),
         *tcl_tk_data,
     ],
-    hiddenimports=['PySide6.QtXcbQpa'],
+    hiddenimports=['PySide6.QtXcbQpa', 'PySide6.QtWidgets', 'PySide6.QtGui', 'PySide6.QtQml'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
