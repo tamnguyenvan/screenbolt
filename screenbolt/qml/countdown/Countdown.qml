@@ -39,7 +39,8 @@ Window {
                             tray.visible = true
                             countdownWindow.visible = false
                         } else {
-                            countdownWindow.hide()
+                            // Change ui to a stop button
+                            countdownWindow.showMinimized()
                         }
                     }
                 }
@@ -60,6 +61,34 @@ Window {
             font.pixelSize: 120
             font.weight: 700
             color: "white"
+            visible: timer.count > 0
+        }
+
+        Button {
+            text: qsTr('Stop')
+            anchors.centerIn: parent
+            visible: timer.count <= 0
+            onClicked: {
+                    videoRecorder.stop_recording()
+                    var metadata = {
+                        'mouse_events': videoRecorder.mouse_events,
+                        'region': videoRecorder.region,
+                    }
+                    var success = videoController.load_video(videoRecorder.output_path, metadata)
+                    if (success) {
+                        clipTrackModel.set_fps(videoController.fps)
+                        clipTrackModel.set_video_len(0, videoController.video_len)
+                        studioLoader.source = ""
+                        studioLoader.source = "qrc:/qml/studio/Studio.qml"
+                        studioLoader.item.showMaximized()
+                        // tray.hide()
+                        if (isSystemTrayAvailable) {
+                            tray.hide()
+                        } else {
+                            countdownWindow.hide()
+                        }
+                    } else {}
+            }
         }
     }
 
@@ -86,8 +115,6 @@ Window {
                         // tray.hide()
                         if (isSystemTrayAvailable) {
                             tray.hide()
-                        } else {
-                            coutndownWindow.show()
                         }
                     } else {}
                 }
@@ -108,5 +135,11 @@ Window {
 
     Component.onCompleted: {
         isSystemTrayAvailable = systemTrayChecker.isAvailable
+        // isSystemTrayAvailable = false
+    }
+
+    onClosing: {
+        videoRecorder.cancel_recording()
+        Qt.quit()
     }
 }

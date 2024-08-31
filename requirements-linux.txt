@@ -1,7 +1,7 @@
-PySide6
-opencv-python
-Pillow
-mss
-pyautogui
+PySide6>=6.7.2
+opencv-python>=4.10.0.84
+Pillow>=10.4.0
+mss>=9.0.1
+pyautogui>=0.9.54
 pyinstaller
 # python-xlib
