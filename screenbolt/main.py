@@ -1,4 +1,5 @@
 import sys
+import gc
 from pathlib import Path
 
 from PySide6.QtWidgets import QApplication, QSystemTrayIcon
@@ -22,12 +23,8 @@ class SystemTrayChecker(QObject):
         return self._is_available
 
 def main():
+    app = QApplication(sys.argv)
     system_tray_checker = SystemTrayChecker()
-
-    if QSystemTrayIcon.isSystemTrayAvailable():
-        app = QGuiApplication(sys.argv)
-    else:
-        app = QApplication(sys.argv)
 
     # Determine the path to the icon
     if getattr(sys, 'frozen', False):
@@ -62,7 +59,6 @@ def main():
     if not engine.rootObjects():
         sys.exit(-1)
     sys.exit(app.exec())
-
 
 if __name__ == "__main__":
     main()
