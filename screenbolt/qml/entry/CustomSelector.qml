@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 
 Item {
     id: customSelector
@@ -58,7 +57,7 @@ Item {
             color: customSelector.color
             anchors.left: parent.left
             anchors.top: parent.top
-            bottomRightRadius: width / 2
+            radius: width / 2
 
             MouseArea {
                 anchors.fill: parent
@@ -101,7 +100,7 @@ Item {
             width: customSelector.rulerSize
             height: customSelector.rulerSize
             color: customSelector.color
-            bottomLeftRadius: width / 2
+            radius: width / 2
             anchors.right: parent.right
             anchors.top: parent.top
 
@@ -144,7 +143,7 @@ Item {
             width: customSelector.rulerSize
             height: customSelector.rulerSize
             color: customSelector.color
-            topLeftRadius: width / 2
+            radius: width / 2
             anchors.right: parent.right
             anchors.bottom: parent.bottom
 
@@ -186,7 +185,7 @@ Item {
             width: customSelector.rulerSize
             height: customSelector.rulerSize
             color: customSelector.color
-            topRightRadius: width / 2
+            radius: width / 2
             anchors.left: parent.left
             anchors.bottom: parent.bottom
 

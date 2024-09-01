@@ -19,7 +19,6 @@ jobs:
     - name: Build with PyInstaller
       run: |
         docker run --rm -v ${PWD}:/app screenbolt-build bash -c "
-        source venv/bin/activate &&
         cd packaging/linux &&
         pyinstaller --clean --noconfirm screenbolt.spec
         "

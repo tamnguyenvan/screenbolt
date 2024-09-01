@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
-import QtQuick.Effects
 import QtQuick.Controls.Material
 import QtQuick.Dialogs
 import "../components"
@@ -101,13 +100,13 @@ Window {
             }
         }
 
-        MessageDialog {
-            id: errorDialog
-            title: "Error"
-            text: "Unable to load video. Please check the file and try again."
-            buttons: MessageDialog.Ok
-            modality: Qt.ApplicationModal
-        }
+        // MessageDialog {
+        //     id: errorDialog
+        //     title: "Error"
+        //     text: "Unable to load video. Please check the file and try again."
+        //     buttons: MessageDialog.Ok
+        //     modality: Qt.ApplicationModal
+        // }
 
         Keys.onPressed: event => {
                             if (event.key === Qt.Key_Escape) {
