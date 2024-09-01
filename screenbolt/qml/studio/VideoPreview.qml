@@ -9,11 +9,6 @@ Item {
     Layout.fillWidth: true
     Layout.fillHeight: true
 
-    readonly property string accentColor: "#e85c0d"
-    Material.theme: Material.Dark
-    Material.primary: accentColor
-    Material.accent: accentColor
-
     Rectangle {
         anchors.fill: parent
         radius: 4
@@ -56,9 +51,23 @@ Item {
         flags: Qt.Window | Qt.FramelessWindowHint
         visible: false
 
+        readonly property string accentColor: "#e85c0d"
+        Material.theme: Material.Dark
+        Material.primary: accentColor
+        Material.accent: accentColor
+
         Item {
             anchors.fill: parent
             focus: true
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onPositionChanged: {
+                    controlBar.visible = true
+                    hideControlBarTimer.restart()
+                }
+            }
 
             Image {
                 id: fullScreenImage
@@ -78,6 +87,15 @@ Item {
                 visible: false
                 color: "#3c3c3c"
 
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onPositionChanged: {
+                        controlBar.visible = true
+                        hideControlBarTimer.restart()
+                    }
+                }
+
                 ColumnLayout {
                     anchors.fill: parent
                     anchors.margins: 8
@@ -89,25 +107,26 @@ Item {
                         Layout.preferredHeight: 1
 
                         Text {
+                            id: elapsedTime
                             text: qsTr("00:00")
                             color: "#fff"
                         }
 
-                        // Rectangle {
-                        //     Layout.fillWidth: true
-                        //     Layout.preferredHeight: 12
-                        //     color: studioWindow.accentColor
-                        //     radius: height / 2
-                        // }
                         Slider {
+                            id: fullScreenTimeSlider
                             from: 0
                             to: 100
                             value: 0
                             Layout.fillWidth: true
                             Layout.preferredHeight: 12
+                            onMoved: {
+                                var currentFrame = parseInt(value * videoController.total_frames * 0.01)
+                                videoController.jump_to_frame(currentFrame)
+                            }
                         }
 
                         Text {
+                            id: totalTime
                             text: qsTr("00:00")
                             color: "#fff"
                         }
@@ -127,33 +146,44 @@ Item {
                         ToolButton {
                             icon.source: "qrc:/resources/icons/prev.svg"
                             icon.color: "#e8eaed"
-                            onClicked: videoController.prev_frame()
+                            onClicked: {
+                                controlBar.visible = true
+                                hideControlBarTimer.restart()
+                                videoController.prev_frame()
+                            }
                         }
                         ToolButton {
                             icon.source: isPlaying ? "qrc:/resources/icons/pause.svg" : "qrc:/resources/icons/play.svg"
                             icon.color: "#e8eaed"
-                            onClicked: videoController.toggle_play_pause()
+                            onClicked: {
+                                controlBar.visible = true
+                                hideControlBarTimer.restart()
+                                videoController.toggle_play_pause()
+                            }
                         }
                         ToolButton {
                             icon.source: "qrc:/resources/icons/next.svg"
                             icon.color: "#e8eaed"
-                            onClicked: videoController.next_frame()
+                            onClicked: {
+                                videoController.next_frame()
+                                controlBar.visible = true
+                                hideControlBarTimer.restart()
+                            }
                         }
                         Item {
                             Layout.fillHeight: true
                             Layout.fillWidth: true
+
+                            ToolButton {
+                                anchors.right: parent.right
+                                icon.source: "qrc:/resources/icons/full_screen_exit.svg"
+                                icon.color: "#e8eaed"
+                                onClicked: {
+                                    fullScreenWindow.hide()
+                                }
+                            }
                         }
-
                     }
-                }
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-                onPositionChanged: {
-                    controlBar.visible = true
-                    hideControlBarTimer.restart()
                 }
             }
 
@@ -182,6 +212,28 @@ Item {
                     controlBar.visible = true
                     hideControlBarTimer.restart()
                 }
+            }
+        }
+
+        Connections {
+            target: videoController
+            function onCurrentFrameChanged(currentFrame) {
+                var progress = 100 * currentFrame / videoController.total_frames
+                fullScreenTimeSlider.value = progress
+
+                 // Update elapsed time
+                var elapsedSeconds = currentFrame / videoController.fps
+                elapsedTime.text = formatTime(elapsedSeconds)
+
+                // Update total time
+                var totalSeconds = videoController.total_frames / videoController.fps
+                totalTime.text = formatTime(totalSeconds)
+            }
+
+            function formatTime(seconds) {
+                var minutes = Math.floor(seconds / 60)
+                var remainingSeconds = Math.floor(seconds % 60)
+                return String(minutes).padStart(2, '0') + ":" + String(remainingSeconds).padStart(2, '0')
             }
         }
     }
