@@ -3,7 +3,7 @@
 
 #define MyAppName "ScreenBolt"
 #define MyAppVersion "1.0.0"
-#define MyAppPublisher "SkyGlow Labs"
+#define MyAppPublisher "SupaBolt Labs"
 #define MyAppURL "https://www.screenbolt.com/"
 #define MyAppExeName "screenbolt.exe"
 #define MyAppAssocName MyAppName + " File"
