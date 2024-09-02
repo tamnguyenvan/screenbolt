@@ -57,7 +57,7 @@ Item {
             color: customSelector.color
             anchors.left: parent.left
             anchors.top: parent.top
-            radius: width / 2
+            // radius: width / 2
 
             MouseArea {
                 anchors.fill: parent
@@ -100,7 +100,7 @@ Item {
             width: customSelector.rulerSize
             height: customSelector.rulerSize
             color: customSelector.color
-            radius: width / 2
+            // radius: width / 2
             anchors.right: parent.right
             anchors.top: parent.top
 
@@ -143,7 +143,7 @@ Item {
             width: customSelector.rulerSize
             height: customSelector.rulerSize
             color: customSelector.color
-            radius: width / 2
+            // radius: width / 2
             anchors.right: parent.right
             anchors.bottom: parent.bottom
 
@@ -185,7 +185,7 @@ Item {
             width: customSelector.rulerSize
             height: customSelector.rulerSize
             color: customSelector.color
-            radius: width / 2
+            // radius: width / 2
             anchors.left: parent.left
             anchors.bottom: parent.bottom
 

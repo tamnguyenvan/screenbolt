@@ -1,6 +1,0 @@
-PySide6
-opencv-python
-Pillow
-mss
-pyautogui
-pyinstaller

@@ -570,8 +570,6 @@ class VideoController(QObject):
             self.video_processor.jump_to_frame(0)
 
         self.undo_redo_manager.do_action(do_trim_left, (do_trim_left, undo_trim_left))
-        # self.video_processor.start_frame = start_frame
-        # self.video_processor.jump_to_frame(0)
 
     @Slot(int)
     def trim_right(self, end_frame):
@@ -581,10 +579,8 @@ class VideoController(QObject):
 
         def undo_trim_right():
             self.video_processor.pop_end_frame()
-            # self.video_processor
 
         self.undo_redo_manager.do_action(do_trim_right, (do_trim_right, undo_trim_right))
-        # self.video_processor.end_frame = end_frame
 
     def _update_undo_redo_signals(self):
         self.canUndoChanged.emit(self.undo_redo_manager.can_undo())
@@ -694,7 +690,7 @@ class VideoProcessor(QObject):
         self._aspect_ratio = "Auto"
         self._padding = 100
         self._inset = 0
-        self._border_radius = 20
+        self._border_radius = 14
         self._background = {"type": "wallpaper", "value": 1}
         self._transforms = None
         self._mouse_events = []

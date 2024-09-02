@@ -9,6 +9,7 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+import cairo
 import pyautogui
 from PIL import Image, ImageDraw, ImageFilter
 from PySide6.QtCore import QFile, QIODevice
@@ -276,17 +277,45 @@ class Cursor(BaseTransform):
         return kwargs
 
 class BorderShadow(BaseTransform):
-    def __init__(self, radius, shadow_blur: int = 20, shadow_opacity: float = 0.65) -> None:
+    def __init__(self, radius, shadow_blur: int = 20, shadow_opacity: float = 0.8) -> None:
         self.radius = radius
         self.shadow_blur = shadow_blur
         self.shadow_opacity = shadow_opacity
 
+    def create_rounded_rectangle(self, background_size, foreground_size, x_offset, y_offset):
+        width, height = background_size
+        rectangle_width, rectangle_height = foreground_size
+        surface = cairo.ImageSurface(cairo.FORMAT_RGB24, width, height)
+        ctx = cairo.Context(surface)
+
+        ctx.set_source_rgb(0, 0, 0)
+        ctx.paint()
+
+        ctx.set_source_rgb(1, 1, 1)
+
+        x = x_offset
+        y = y_offset
+
+        corner_radius = self.radius
+        ctx.new_sub_path()
+        ctx.arc(x + rectangle_width - corner_radius, y + corner_radius, corner_radius, -np.pi/2, 0)
+        ctx.arc(x + rectangle_width - corner_radius, y + rectangle_height - corner_radius, corner_radius, 0, np.pi/2)
+        ctx.arc(x + corner_radius, y + rectangle_height - corner_radius, corner_radius, np.pi/2, np.pi)
+        ctx.arc(x + corner_radius, y + corner_radius, corner_radius, np.pi, 3*np.pi/2)
+        ctx.close_path()
+
+        ctx.fill()
+
+        buf = surface.get_data()
+
+        arr = np.ndarray(shape=(height, width, 4), dtype=np.uint8, buffer=buf)
+
+        return arr
+
     @lru_cache(maxsize=100)
     def create_rounded_mask(self, size):
-        mask = Image.new('L', size, 0)
-        draw = ImageDraw.Draw(mask)
-        draw.rounded_rectangle([(0, 0), size], self.radius, fill=255)
-        mask = np.array(mask)
+        rect = self.create_rounded_rectangle(size, size, 0, 0)
+        mask = rect[:, :, [2, 1, 0]]
         return mask
 
     @lru_cache(maxsize=100)
@@ -309,26 +338,54 @@ class BorderShadow(BaseTransform):
         x_offset,
         y_offset,
     ):
+        # import time
         foreground_size = foreground.shape[1], foreground.shape[0]
         background_size = background.shape[1], background.shape[0]
 
         # Create mask
-        mask = self.create_rounded_mask(foreground_size)
+        # tt = time.time()
+        # t0 = time.time()
+        mask_float = self.create_rounded_mask(foreground_size).astype(np.float32) / 255.0
+        # print('mask', time.time() - t0)
 
         # Create shadow
+        # t0 = time.time()
         shadow = self.create_shadow(background_size, foreground_size, x_offset, y_offset)
         background = background.astype(np.float32) / 255.0
+        # print('shadow', time.time() - t0)
 
         # Vectorized shadow overlay
+        # t0 = time.time()
         result = np.multiply(shadow, background)
-        result = (result * 255).astype(np.uint8)
+        # print('overlay', time.time() - t0)
 
         # Optimized blending
+        # t0 = time.time()
         roi = result[y_offset:y_offset+foreground_size[1], x_offset:x_offset+foreground_size[0]]
-        np.putmask(roi, cv2.merge([mask, mask, mask]), foreground)
-        result[y_offset:y_offset+foreground_size[1], x_offset:x_offset+foreground_size[0]] = roi
 
-        return result.astype(np.uint8)
+        foreground_float = foreground.astype(np.float32) / 255.0
+
+        # Blend roi and foreground based on mask
+        inv_mask = 1.0 - mask_float
+
+        pad = self.radius // 3
+
+        blended_roi_top = np.multiply(foreground_float[:pad, ...], mask_float[:pad, ...]) + np.multiply(roi[:pad, ...], inv_mask[:pad, ...])
+        blended_roi_left = np.multiply(foreground_float[pad:-pad, :pad], mask_float[pad:-pad, :pad]) + np.multiply(roi[pad:-pad, :pad], inv_mask[pad:-pad, :pad])
+        blended_roi_bottom= np.multiply(foreground_float[-pad:, ...], mask_float[-pad:, ...]) + np.multiply(roi[-pad:, ...], inv_mask[-pad:, ...])
+        blended_roi_right = np.multiply(foreground_float[pad:-pad, -pad:], mask_float[pad:-pad, -pad:]) + np.multiply(roi[pad:-pad, -pad:], inv_mask[pad:-pad, -pad:])
+
+        roi[:pad, ...] = blended_roi_top
+        roi[pad:-pad, :pad] = blended_roi_left
+        roi[-pad:, ...] = blended_roi_bottom
+        roi[pad:-pad, -pad:] = blended_roi_right
+        roi[pad:-pad, pad:-pad] = foreground_float[pad:-pad, pad:-pad]
+
+        result[y_offset:y_offset+foreground_size[1], x_offset:x_offset+foreground_size[0]] = roi
+        # print('final', time.time() - t0)
+
+        # print('total', time.time() - tt)
+        return (result * 255).astype(np.uint8)
 
     def __call__(self, **kwargs):
         kwargs["radius"] = self.radius

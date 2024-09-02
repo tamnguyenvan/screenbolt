@@ -8,6 +8,7 @@ Window {
     height: Screen.desktopAvailableHeight
     visible: true
     color: "transparent"
+
     Component.onCompleted: {
         windowController.get_window_position()
         screenbolt.source = ""

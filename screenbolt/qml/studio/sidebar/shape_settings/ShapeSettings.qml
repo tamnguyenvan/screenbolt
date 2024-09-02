@@ -35,7 +35,7 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
         Layout.leftMargin: 10
-        spacing: 30
+        spacing: 10
 
         // Padding
         ColumnLayout {
@@ -174,7 +174,7 @@ ColumnLayout {
                     id: roundnessSlider
                     from: 0
                     to: 100
-                    value: 20
+                    value: 14
                     Layout.fillWidth: true
 
                     onValueChanged: {
@@ -200,5 +200,10 @@ ColumnLayout {
                 }
             }
         }
+    }
+
+    Item {
+        Layout.fillHeight: true
+        Layout.fillWidth: true
     }
 }
