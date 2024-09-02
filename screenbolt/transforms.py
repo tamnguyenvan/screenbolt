@@ -277,7 +277,7 @@ class Cursor(BaseTransform):
         return kwargs
 
 class BorderShadow(BaseTransform):
-    def __init__(self, radius, shadow_blur: int = 20, shadow_opacity: float = 0.8) -> None:
+    def __init__(self, radius, shadow_blur: int = 10, shadow_opacity: float = 0.5) -> None:
         self.radius = radius
         self.shadow_blur = shadow_blur
         self.shadow_opacity = shadow_opacity
