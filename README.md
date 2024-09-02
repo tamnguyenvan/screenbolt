@@ -1,7 +1,7 @@
 # ScreenBolt
 ScreenBolt is an open-source desktop application designed for screen recording. With ScreenBolt, you can easily capture your screen and apply various effects such as mouse tracking and zooming. It’s compatible with Windows, Linux, and macOS.
 
-[demo](./assets/demo.gif)
+![demo](./assets/demo.gif)
 
 ## Features
 - Screen Recording: Capture your entire screen or a selected region.
