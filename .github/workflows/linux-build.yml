@@ -16,17 +16,12 @@ jobs:
     - name: Build Docker image
       run: docker build -t screenbolt-build .
 
-    - name: Build with PyInstaller
-      run: |
-        docker run --rm -v ${PWD}:/app screenbolt-build bash -c "
-        cd packaging/linux &&
-        pyinstaller --clean --noconfirm screenbolt.spec
-        "
-
     - name: Package as .deb
       run: |
         docker run --rm -v ${PWD}:/app screenbolt-build bash -c "
+        cd screenbolt && python3 compile_resources.py && cd .. &&
         cd packaging/linux &&
+        pyinstaller --clean --noconfirm screenbolt.spec &&
         chmod +x build-deb.sh &&
         ./build-deb.sh '${GITHUB_REF_NAME}' &&
         mv screenbolt*.deb /app/
