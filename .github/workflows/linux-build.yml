@@ -82,6 +82,7 @@ jobs:
       run: |
         source venv/bin/activate
         cd packaging/linux
+        pip install pyinstaller
         pyinstaller --clean --noconfirm screenbolt.spec
 
     - name: Package as .deb
