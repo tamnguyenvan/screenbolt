@@ -1,7 +1,9 @@
-# ScreenBolt
+![ScreenBolt](./assets/banner.svg)
+
+<br>
+<br>
 
 ScreenBolt is a powerful and user-friendly screen recording application that allows you to capture your screen and enhance your recordings with intuitive editing features.
-
 ## Table of Contents
 
 - [Features](#features)

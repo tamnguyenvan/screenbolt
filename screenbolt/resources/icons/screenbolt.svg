@@ -1,6 +1,11 @@
-<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g stroke-width="0"/>
-  <g stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="12" cy="12" r="10" fill="#FCA311"/>
-  <path fill-rule="evenodd" clip-rule="evenodd" d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0m-.928 7.883L8.654 9.809c-1.014.807-1.521 1.212-1.422 1.662l.005.023c.113.447.756.62 2.043.964.714.192 1.071.288 1.239.558l.009.015c.162.275.069.618-.114 1.304l-.048.18c-.512 1.903-.766 2.855-.275 3.162s1.272-.314 2.835-1.56l2.418-1.925c1.016-.808 1.522-1.212 1.424-1.663l-.005-.023c-.114-.447-.756-.62-2.043-.964-.714-.192-1.071-.288-1.239-.558l-.009-.015c-.162-.273-.069-.617.114-1.303l.048-.18c.51-1.903.766-2.856.275-3.163s-1.273.315-2.837 1.56" fill="#14213D"/>
+<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs></defs>
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <circle style="fill: rgb(84, 94, 238);" transform="matrix(0.078176, 0.000061, 0, 0.078176, -16.807842, -19.439854)" cx="522" cy="555.5" r="307"></circle>
+  <g id="g-1" stroke-width="0" transform="matrix(1, 0, 0, 1, 26.402794, -3.000001)"></g>
+  <g id="g-2" stroke-linecap="round" stroke-linejoin="round" transform="matrix(1, 0, 0, 1, 26.402794, -3.000001)"></g>
+  <g id="SVGRepo_iconCarrier" transform="matrix(2, 0, 0, 2, -24, -30)">
+    <path d="M28 20C25 20.1296 19 21.0889 19 23.8889C19 27.3889 29 26.6111 29 30.1111C29 32.9111 22.3333 33.8704 19 34" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+  </g>
 </svg>
