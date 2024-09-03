@@ -18,8 +18,8 @@ FocusScope {
 
     readonly property string borderColor: "#e8eaed"
     readonly property int borderWidth: 2
-    readonly property string backgroundColor: "#e85c0d"
-    readonly property string stripColor: "#c24d0c"
+    readonly property string backgroundColor: "#7778ff"
+    readonly property string stripColor: "#545eee"
 
     Behavior on x {
         NumberAnimation {

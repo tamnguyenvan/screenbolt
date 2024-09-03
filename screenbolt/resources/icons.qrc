@@ -1,12 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>../resources/icons/add.svg</file>
-        <file>../resources/icons/ar_1_1.svg</file>
-        <file>../resources/icons/ar_3_4.svg</file>
-        <file>../resources/icons/ar_4_3.svg</file>
-        <file>../resources/icons/ar_9_16.svg</file>
-        <file>../resources/icons/ar_16_9.svg</file>
-        <file>../resources/icons/ar_auto.svg</file>
         <file>../resources/icons/back.svg</file>
         <file>../resources/icons/background.svg</file>
         <file>../resources/icons/border.svg</file>
@@ -24,6 +18,7 @@
         <file>../resources/icons/padding.svg</file>
         <file>../resources/icons/inset.svg</file>
         <file>../resources/icons/pause.svg</file>
+        <file>../resources/icons/stop.svg</file>
         <file>../resources/icons/play.svg</file>
         <file>../resources/icons/prev.svg</file>
         <file>../resources/icons/record.svg</file>
