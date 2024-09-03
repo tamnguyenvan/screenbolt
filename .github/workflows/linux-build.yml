@@ -1,109 +1,46 @@
-# name: Build and Package Linux
-# on:
-#   push:
-#     tags:
-#       - '*.*.*'
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v3
-
-#     - name: Set up Docker Buildx
-#       uses: docker/setup-buildx-action@v1
-
-#     - name: Build Docker image
-#       run: docker build -t screenbolt-build .
-
-#     - name: Build with PyInstaller
-#       run: |
-#         docker run --rm -v ${PWD}:/app screenbolt-build bash -c "
-#         cd packaging/linux &&
-#         pyinstaller --clean --noconfirm screenbolt.spec
-#         "
-
-#     - name: Package as .deb
-#       run: |
-#         docker run --rm -v ${PWD}:/app screenbolt-build bash -c "
-#         cd packaging/linux &&
-#         chmod +x build-deb.sh &&
-#         ./build-deb.sh '${GITHUB_REF_NAME}' &&
-#         mv screenbolt*.deb /app/
-#         "
-
-#     - name: Upload Debian package as artifact
-#       uses: actions/upload-artifact@v3
-#       with:
-#         name: screenbolt-${{ github.ref_name }}.deb
-#         path: ./screenbolt*.deb
-
-#     - name: Create GitHub Release
-#       uses: softprops/action-gh-release@v1
-#       with:
-#         files: screenbolt*.deb
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 name: Build and Package Linux
-
 on:
   push:
     tags:
       - '*.*.*'
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
-    - name: Install dependencies
-      run: |
-        python -m venv venv
-        source venv/bin/activate
-        pip install --upgrade pip
-        pip install -r requirements.txt
-
-    - name: Compile resources
-      run: |
-        source venv/bin/activate
-        cd screenbolt
-        python compile_resources.py
+    - name: Build Docker image
+      run: docker build -t screenbolt-build .
 
     - name: Build with PyInstaller
       run: |
-        source venv/bin/activate
-        cd packaging/linux
-        pip install pyinstaller
+        docker run --rm -v ${PWD}:/app screenbolt-build bash -c "
+        cd packaging/linux &&
         pyinstaller --clean --noconfirm screenbolt.spec
+        "
 
     - name: Package as .deb
       run: |
-        cd packaging/linux
-        chmod +x build-deb.sh
-        ./build-deb.sh "${GITHUB_REF_NAME}"
-        mv screenbolt*.deb ../../
+        docker run --rm -v ${PWD}:/app screenbolt-build bash -c "
+        cd packaging/linux &&
+        chmod +x build-deb.sh &&
+        ./build-deb.sh '${GITHUB_REF_NAME}' &&
+        mv screenbolt*.deb /app/
+        "
 
     - name: Upload Debian package as artifact
       uses: actions/upload-artifact@v3
       with:
         name: screenbolt-${{ github.ref_name }}.deb
         path: ./screenbolt*.deb
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        files: |
-          screenbolt*.deb
+        files: screenbolt*.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
