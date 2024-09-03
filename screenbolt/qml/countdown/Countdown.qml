@@ -13,7 +13,6 @@ Window {
     color: "transparent"
 
     readonly property int countdownTime: 3
-    property bool isSystemTrayAvailable: false
 
     Item {
         anchors.fill: parent
@@ -34,13 +33,8 @@ Window {
                     if (count == 0) {
                         timer.stop()
                         videoRecorder.start_recording()
-                        if (isSystemTrayAvailable) {
-                            tray.visible = true
-                            countdownWindow.visible = false
-                        } else {
-                            // Change ui to a stop button
-                            countdownWindow.showMinimized()
-                        }
+                        tray.visible = true
+                        countdownWindow.visible = false
                     }
                 }
             }
@@ -80,12 +74,7 @@ Window {
                         studioLoader.source = ""
                         studioLoader.source = "qrc:/qml/studio/Studio.qml"
                         studioLoader.item.showMaximized()
-                        // tray.hide()
-                        if (isSystemTrayAvailable) {
-                            tray.hide()
-                        } else {
-                            countdownWindow.hide()
-                        }
+                        tray.hide()
                     } else {}
             }
         }
@@ -111,10 +100,7 @@ Window {
                         studioLoader.source = ""
                         studioLoader.source = "qrc:/qml/studio/Studio.qml"
                         studioLoader.item.showMaximized()
-                        // tray.hide()
-                        if (isSystemTrayAvailable) {
-                            tray.hide()
-                        }
+                        tray.hide()
                     } else {}
                 }
             }
@@ -130,11 +116,6 @@ Window {
 
     Loader {
         id: studioLoader
-    }
-
-    Component.onCompleted: {
-        isSystemTrayAvailable = systemTrayChecker.isAvailable
-        // isSystemTrayAvailable = false
     }
 
     onClosing: {

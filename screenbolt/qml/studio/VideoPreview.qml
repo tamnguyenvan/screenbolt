@@ -244,4 +244,11 @@ Item {
             videoPreview.source = "image://frames/frame?" + Date.now()
         }
     }
+
+    Shortcut {
+        sequence: "F"
+        onActivated: {
+            fullScreenWindow.showFullScreen()
+        }
+    }
 }
