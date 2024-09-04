@@ -11,7 +11,7 @@ def str2bool(x: str) -> bool:
     x = x.lower()
     return x == "true" or x == "1"
 
-def generate_video_path(prefix: str = "ScreenBolt", extension: str = ".mp4"):
+def generate_video_path(prefix: str = "ScreenVivid", extension: str = ".mp4"):
     # Use the system"s temporary directory
     root = Path(tempfile.gettempdir())
 

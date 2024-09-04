@@ -198,7 +198,7 @@ Window {
     SystemTrayIcon {
         id: tray
         visible: false
-        icon.source: "qrc:/resources/icons/screenbolt.svg"
+        icon.source: "qrc:/resources/icons/screenvivid.svg"
         menu: Menu {
             MenuItem {
                 text: qsTr("Stop")

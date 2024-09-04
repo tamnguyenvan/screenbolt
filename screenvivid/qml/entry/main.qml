@@ -11,10 +11,10 @@ Window {
 
     Component.onCompleted: {
         windowController.get_window_position()
-        screenbolt.source = ""
-        screenbolt.source = "qrc:/qml/entry/ScreenBolt.qml"
+        screenvivid.source = ""
+        screenvivid.source = "qrc:/qml/entry/ScreenVivid.qml"
         mainWindow.hide()
     }
 
-    Loader { id: screenbolt }
+    Loader { id: screenvivid }
 }

@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
 import QtQuick.Controls.Material
-// import QtQuick.Dialogs
+import QtQuick.Dialogs
 import "../components"
 
 Window {
@@ -64,16 +64,17 @@ Window {
         // Control panel
         ControlPanel {}
 
-        Connections {
-            target: fileModel
-            function onFileSelected(filePath) {
+        FileDialog {
+            id: videoFileDialog
+            nameFilters: ["Video files (*.mp4 *.avi *.webm)"]
+            onAccepted: {
                 startupWindow.visible = true
-                if (filePath) {
+                if (selectedFile) {
                     const metadata = {
                         'mouse_events': {'click': [], 'move': {}},
                         'region': [],
                     }
-                    var success = videoController.load_video(filePath,
+                    var success = videoController.load_video(selectedFile,
                                             metadata)
 
                     if (success) {
@@ -93,43 +94,11 @@ Window {
                     }
                 }
             }
+
+            onRejected: {
+                startupWindow.showFullScreen()
+            }
         }
-
-        // FileDialog {
-        //     id: videoFileDialog
-        //     nameFilters: ["Video files (*.mp4 *.avi *.webm)"]
-        //     onAccepted: {
-        //         startupWindow.visible = true
-        //         if (selectedFile) {
-        //             const metadata = {
-        //                 'mouse_events': {'click': [], 'move': {}},
-        //                 'region': [],
-        //             }
-        //             var success = videoController.load_video(selectedFile,
-        //                                     metadata)
-
-        //             if (success) {
-        //                 if (videoController.fps <= 0 || videoController.fps > 200 || videoController.total_frames <= 0) {
-        //                     errorDialog.open()
-        //                 } else {
-        //                     clipTrackModel.set_fps(videoController.fps)
-        //                     clipTrackModel.set_video_len(0, videoController.video_len)
-
-        //                     studioLoader.source = ""
-        //                     studioLoader.source = "qrc:/qml/studio/Studio.qml"
-        //                     studioLoader.item.showMaximized()
-        //                     startupWindow.hide()
-        //                 }
-        //             } else {
-        //                 errorDialog.open()
-        //             }
-        //         }
-        //     }
-
-        //     onRejected: {
-        //         startupWindow.showFullScreen()
-        //     }
-        // }
 
         // MessageDialog {
         //     id: errorDialog

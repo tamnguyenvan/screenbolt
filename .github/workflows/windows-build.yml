@@ -30,34 +30,34 @@ jobs:
     - name: Compile resources
       run: |
         venv\Scripts\activate
-        cd screenbolt
+        cd screenvivid
         python compile_resources.py
 
     - name: Build with PyInstaller
       run: |
         venv\Scripts\activate
         cd packaging/windows
-        pyinstaller --clean --noconfirm screenbolt.spec
+        pyinstaller --clean --noconfirm screenvivid.spec
 
     - name: Update version in Inno Setup script
       run: |
         $version = "${{ github.ref_name }}"
-        $content = Get-Content -Path packaging/windows/screenbolt.iss -Raw
+        $content = Get-Content -Path packaging/windows/screenvivid.iss -Raw
         $newContent = $content -replace '#define MyAppVersion ".*"', "#define MyAppVersion `"$version`""
-        $newContent | Set-Content -Path packaging/windows/screenbolt.iss
+        $newContent | Set-Content -Path packaging/windows/screenvivid.iss
       shell: pwsh
 
     - name: Build installer with Inno Setup
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
       with:
-        path: packaging/windows/screenbolt.iss
-        options: /O+ /F"ScreenBolt-Setup-${{ github.ref_name }}"
+        path: packaging/windows/screenvivid.iss
+        options: /O+ /F"ScreenVivid-Setup-${{ github.ref_name }}"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ScreenBolt-Setup-${{ github.ref_name }}.exe
-        path: D:\a\screenbolt\screenbolt\packaging\windows\Output\ScreenBolt-Setup-*.exe
+        name: ScreenVivid-Setup-${{ github.ref_name }}.exe
+        path: D:\a\screenvivid\screenvivid\packaging\windows\Output\ScreenVivid-Setup-*.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -65,6 +65,6 @@ jobs:
       id: create_release
       uses: softprops/action-gh-release@v1
       with:
-        files: "**/Output/ScreenBolt-Setup-${{ github.ref_name }}.exe"
+        files: "**/Output/ScreenVivid-Setup-${{ github.ref_name }}.exe"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

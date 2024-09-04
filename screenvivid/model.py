@@ -16,10 +16,9 @@ from PySide6.QtGui import QImage, QGuiApplication
 from PySide6.QtWidgets import QFileDialog
 from PIL import Image
 
-from screenbolt import config
-from screenbolt import transforms
-from screenbolt.utils.general import generate_video_path
-# from screenbolt.utils.cursor import get_cursor_image
+from screenvivid import config
+from screenvivid import transforms
+from screenvivid.utils.general import generate_video_path
 
 class UndoRedoManager:
     def __init__(self):
@@ -976,7 +975,7 @@ class ExportThread(QThread):
         super().__init__()
         self.video_processor = video_processor
         self.export_params = export_params
-        self.output_dir = os.path.join(os.path.expanduser("~"), "Videos/ScreenBolt")
+        self.output_dir = os.path.join(os.path.expanduser("~"), "Videos/ScreenVivid")
         if not os.path.isdir(self.output_dir):
             os.makedirs(self.output_dir, exist_ok=True)
         self._stop_flag = False
@@ -1050,13 +1049,3 @@ class ExportThread(QThread):
             self.progress.emit(100)
 
         self.finished.emit()
-
-class FileModel(QObject):
-    fileSelected = Signal(str)
-
-    @Slot()
-    def openFileDialog(self):
-        file_dialog = QFileDialog()
-        file_path, _ = file_dialog.getOpenFileName(None, "Select a file", "", "Video Files (*.mp4 *.avi *.webm)")
-        if file_path:
-            self.fileSelected.emit(file_path)

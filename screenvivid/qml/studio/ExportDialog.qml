@@ -264,7 +264,7 @@ Dialog {
 
                                 return year + month + day + '-' + hours + minutes + seconds;
                             }
-                            outputPath = 'ScreenBolt-' + getFormattedTimestamp()
+                            outputPath = 'ScreenVivid-' + getFormattedTimestamp()
 
                             var exportParams = {
                                 "format": exportFormat.toLowerCase(),
@@ -354,7 +354,7 @@ Dialog {
                     Layout.alignment: Qt.AlignHCenter
                 }
                 Text {
-                    text: `~/Videos/ScreenBolt/${outputPath}.${exportFormat.toLowerCase()}`
+                    text: `~/Videos/ScreenVivid/${outputPath}.${exportFormat.toLowerCase()}`
                     color: "white"
                     font.pixelSize: 14
                     Layout.alignment: Qt.AlignHCenter

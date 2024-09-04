@@ -6,12 +6,12 @@ from PyInstaller.utils.hooks import collect_data_files
 tcl_tk_data = collect_data_files('tkinter')
 
 a = Analysis(
-    ['../../screenbolt/main.py'],
+    ['../../screenvivid/main.py'],
     pathex=[],
     binaries=[],
     datas=[
-        ('../../screenbolt/resources/images/wallpapers/hires', 'resources/images/wallpapers/hires'),
-        ('../../screenbolt/resources/icons/screenbolt.ico', 'resources/icons/'),
+        ('../../screenvivid/resources/images/wallpapers/hires', 'resources/images/wallpapers/hires'),
+        ('../../screenvivid/resources/icons/screenvivid.ico', 'resources/icons/'),
         *tcl_tk_data,
     ],
     hiddenimports=[],
@@ -29,7 +29,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='ScreenBolt',
+    name='screenvivid',
     debug=False,
     bootloader_ignore_signals=False,
     strip=True,
@@ -40,7 +40,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon="../../resources/icons/screenbolt.ico"
+    icon="../../screenvivid/resources/icons/screenvivid.ico"
 )
 coll = COLLECT(
     exe,
@@ -49,5 +49,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='ScreenBolt',
+    name='ScreenVivid',
 )

@@ -15,8 +15,7 @@ from PIL import Image, ImageDraw, ImageFilter
 from PySide6.QtCore import QFile, QIODevice
 from PySide6.QtGui import QCursor
 
-from screenbolt.utils.general import hex_to_rgb, create_gradient_image
-# from screenbolt.utils.cursor import get_cursor_image
+from screenvivid.utils.general import hex_to_rgb, create_gradient_image
 
 
 class BaseTransform:

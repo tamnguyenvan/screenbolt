@@ -1,9 +1,9 @@
-![ScreenBolt](./assets/banner.svg)
+![ScreenVivid](./assets/banner.svg)
 
 <br>
 <br>
 
-ScreenBolt is a powerful and user-friendly screen recording application that allows you to capture your screen and enhance your recordings with intuitive editing features.
+ScreenVivid is a powerful and user-friendly screen recording application that allows you to capture your screen and enhance your recordings with intuitive editing features.
 ## Table of Contents
 
 - [Features](#features)
@@ -42,12 +42,12 @@ ScreenBolt is a powerful and user-friendly screen recording application that all
 
 1. Download the latest .deb package from our official website:
    ```
-   wget https://screenbolt.com/downloads/screenbolt_latest.deb
+   wget https://screenvivid.com/downloads/screen.deb
    ```
 
 2. Install the package using dpkg:
    ```
-   sudo dpkg -i screenbolt_latest.deb
+   sudo dpkg -i screenvivid_latest.deb
    ```
 
 3. If you encounter any dependency issues, run:
@@ -68,7 +68,7 @@ ScreenBolt is a powerful and user-friendly screen recording application that all
 
 4. Click "Install" and wait for the process to complete.
 
-5. Launch ScreenBolt from the Start menu or desktop shortcut.
+5. Launch ScreenVivid from the Start menu or desktop shortcut.
 
 ### Troubleshooting Installation
 
@@ -83,11 +83,11 @@ ScreenBolt is a powerful and user-friendly screen recording application that all
   - If the installer doesn't run, right-click and select "Run as administrator".
   - For "Windows protected your PC" message, click "More info" then "Run anyway".
 
-- For any other issues, please check our [FAQ](https://screenbolt.com/faq) or [contact support](#support).
+- For any other issues, please check our [FAQ](https://screenvivid.com/faq) or [contact support](#support).
 
 ## Usage
 
-1. Launch ScreenBolt from your applications menu or start menu.
+1. Launch ScreenVivid from your applications menu or start menu.
 2. Click the "Record" button to start capturing your screen.
 3. Use the editing tools to enhance your recording after capture.
 4. Save your edited video in your preferred format.
@@ -106,7 +106,7 @@ ScreenBolt is a powerful and user-friendly screen recording application that all
 
 ## Roadmap
 
-We're constantly working to improve ScreenBolt. Here are some features we're planning to add in the future:
+We're constantly working to improve ScreenVivid. Here are some features we're planning to add in the future:
 
 - Support for more Linux distributions
 - MacOS compatibility
@@ -117,14 +117,14 @@ We're constantly working to improve ScreenBolt. Here are some features we're pla
 
 If you encounter any issues or have questions, please:
 
-1. Check our [FAQ](https://screenbolt.com/faq)
-2. Visit our [community forums](https://community.screenbolt.com)
-3. Contact us at support@screenbolt.com
+1. Check our [FAQ](https://screenvivid.com/faq)
+2. Visit our [community forums](https://community.screenvivid.com)
+3. Contact us at support@screenvivid.com
 
 ## License
 
-ScreenBolt is released under the MIT License. See the LICENSE file for more details.
+ScreenVivid is released under the MIT License. See the LICENSE file for more details.
 
 ---
 
-Thank you for choosing ScreenBolt for your screen recording needs!
+Thank you for choosing ScreenVivid for your screen recording needs!

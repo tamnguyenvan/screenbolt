@@ -1,5 +1,5 @@
 import QtQuick
-// import QtQuick.Effects
+import QtQuick.Effects
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
@@ -182,8 +182,7 @@ Item {
 
                         onClicked: {
                             startupWindow.hide()
-                            // videoFileDialog.open()
-                            fileModel.openFileDialog()
+                            videoFileDialog.open()
                         }
 
                         background: Rectangle {
@@ -225,13 +224,13 @@ Item {
         onClicked: Qt.quit()
     }
 
-    // MultiEffect {
-    //     source: home
-    //     anchors.fill: home
-    //     shadowBlur: 1.0
-    //     shadowEnabled: true
-    //     shadowColor: "black"
-    //     shadowVerticalOffset: 0
-    //     shadowHorizontalOffset: 0
-    // }
+    MultiEffect {
+        source: home
+        anchors.fill: home
+        shadowBlur: 1.0
+        shadowEnabled: true
+        shadowColor: "black"
+        shadowVerticalOffset: 0
+        shadowHorizontalOffset: 0
+    }
 }

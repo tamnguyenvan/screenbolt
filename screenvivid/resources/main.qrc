@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>../qml/entry/main.qml</file>
-        <file>../qml/entry/ScreenBolt.qml</file>
+        <file>../qml/entry/ScreenVivid.qml</file>
         <file>../qml/entry/ControlPanel.qml</file>
         <file>../qml/entry/CustomSelector.qml</file>
 

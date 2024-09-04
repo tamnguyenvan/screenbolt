@@ -19,7 +19,7 @@ Window {
     height: defaultHeight
     minimumWidth: minWidth
     minimumHeight: minHeight
-    title: qsTr("ScreenBolt")
+    title: qsTr("ScreenVivid")
     visible: true
     visibility: Window.Maximized
 

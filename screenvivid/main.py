@@ -5,11 +5,13 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon
 from PySide6.QtQml import QQmlApplicationEngine
 
-from screenbolt import rc_main
-from screenbolt import rc_icons
-from screenbolt import rc_images
-from screenbolt.model import ClipTrackModel, WindowController, VideoController, VideoRecorder, FileModel
-from screenbolt.image_provider import FrameImageProvider
+from screenvivid import rc_main
+from screenvivid import rc_icons
+from screenvivid import rc_images
+from screenvivid.model import (
+    ClipTrackModel, WindowController, VideoController, VideoRecorder
+)
+from screenvivid.image_provider import FrameImageProvider
 
 
 def main():
@@ -23,7 +25,7 @@ def main():
         # If running in a regular Python environment
         base_path = Path(__file__).resolve().parent
 
-    icon_path = base_path / "resources/icons/screenbolt.ico"
+    icon_path = base_path / "resources/icons/screenvivid.ico"
     app.setWindowIcon(QIcon(str(icon_path)))
     engine = QQmlApplicationEngine()
 
@@ -36,13 +38,11 @@ def main():
     window_controller = WindowController()
     video_controller = VideoController(frame_provider=frame_provider)
     video_recorder = VideoRecorder()
-    file_model = FileModel()
 
     engine.rootContext().setContextProperty("clipTrackModel", clip_track_model)
     engine.rootContext().setContextProperty("windowController", window_controller)
     engine.rootContext().setContextProperty("videoController", video_controller)
     engine.rootContext().setContextProperty("videoRecorder", video_recorder)
-    engine.rootContext().setContextProperty("fileModel", file_model)
 
     qml_file = "qrc:/qml/entry/main.qml"
     engine.load(qml_file)
