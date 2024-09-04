@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y \
     libatspi2.0-dev \
     '^libxcb.*-dev' \
     libxcb-cursor-dev \
+    libxcb-xinerama0 \
     libglib2.0-0 \
     python3-tk \
     libkrb5-3 \
