@@ -13,6 +13,7 @@ from PySide6.QtCore import (
     QModelIndex
 )
 from PySide6.QtGui import QImage, QGuiApplication
+from PySide6.QtWidgets import QFileDialog
 from PIL import Image
 
 from screenbolt import config
@@ -1049,3 +1050,13 @@ class ExportThread(QThread):
             self.progress.emit(100)
 
         self.finished.emit()
+
+class FileModel(QObject):
+    fileSelected = Signal(str)
+
+    @Slot()
+    def openFileDialog(self):
+        file_dialog = QFileDialog()
+        file_path, _ = file_dialog.getOpenFileName(None, "Select a file", "", "Video Files (*.mp4 *.avi *.webm)")
+        if file_path:
+            self.fileSelected.emit(file_path)

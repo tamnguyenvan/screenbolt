@@ -8,7 +8,7 @@ from PySide6.QtQml import QQmlApplicationEngine
 from screenbolt import rc_main
 from screenbolt import rc_icons
 from screenbolt import rc_images
-from screenbolt.model import ClipTrackModel, WindowController, VideoController, VideoRecorder
+from screenbolt.model import ClipTrackModel, WindowController, VideoController, VideoRecorder, FileModel
 from screenbolt.image_provider import FrameImageProvider
 
 
@@ -36,11 +36,13 @@ def main():
     window_controller = WindowController()
     video_controller = VideoController(frame_provider=frame_provider)
     video_recorder = VideoRecorder()
+    file_model = FileModel()
 
     engine.rootContext().setContextProperty("clipTrackModel", clip_track_model)
     engine.rootContext().setContextProperty("windowController", window_controller)
     engine.rootContext().setContextProperty("videoController", video_controller)
     engine.rootContext().setContextProperty("videoRecorder", video_recorder)
+    engine.rootContext().setContextProperty("fileModel", file_model)
 
     qml_file = "qrc:/qml/entry/main.qml"
     engine.load(qml_file)

@@ -182,7 +182,8 @@ Item {
 
                         onClicked: {
                             startupWindow.hide()
-                            videoFileDialog.open()
+                            // videoFileDialog.open()
+                            fileModel.openFileDialog()
                         }
 
                         background: Rectangle {
